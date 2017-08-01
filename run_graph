@@ -7,7 +7,7 @@ if [ "$1" -eq "0" ]
 then
 	tput bold
 else
-	tput me
+	tput sgr0
 fi
 }
 ########################
@@ -22,7 +22,7 @@ case $1 in
 ("magenta") color="5" ;;
 ("cyan")    color="6" ;;
 ("white")   color="7" ;;
-(*)			color="9" ;;
+(*)			color="0" ;;
 esac
 tput setab $color
 }
@@ -38,7 +38,7 @@ case $1 in
 ("magenta") color="5" ;;
 ("cyan")    color="6" ;;
 ("white")   color="7" ;;
-(*)			color="9" ;;
+(*)			color="7" ;;
 esac
 tput setaf $color
 }
@@ -650,7 +650,7 @@ for ((show_matrix_i=1; $show_matrix_i<11; show_matrix_i++))
 				echo -n "_|"
 			fi;;
 		("3") echo -n "_|" ;;
-		("4") SetColor blue; echo -n "x"; SetColor; echo -n "|" ;;
+		("4") SetColor cyan; echo -n "x"; SetColor; echo -n "|" ;;
 		("5") SetBackgroundColor green; SetColor red; echo -n "x"; SetBackgroundColor; SetColor; echo -n "|" ;;
 		("6") SetBackgroundColor red; echo -n " "; SetBackgroundColor; echo -n "|" ;;
 		esac
@@ -660,7 +660,7 @@ for ((show_matrix_i=1; $show_matrix_i<11; show_matrix_i++))
   gotoXY $1 2 2 $show_matrix_i
   echo "  |a|b|c|d|e|f|g|h|j|k| "
   echo
-  tput cd
+  tput ed
 
   if [ "$Now_Shooting" = "2" ]
   then echo "Player 1! It's your turn!"; echo
@@ -677,7 +677,7 @@ About()
 	TypeWord "Sea_Battle" 3 1 red
 	TypeWord "$version" 8 1 blue
 	SetColor green
-	echo "   Made by Dmitrenko Sergiy"
+	echo "   Made by Sergii Dmytrenko"
 	echo "    To make a shot, just type it. E.g. \"b7\"."
 	echo "    Type \"rand\" to make random shot."
 	echo; SetColor
@@ -724,6 +724,9 @@ do
 	read answer
 	echo
 done
+
+SetBackgroundColor
+SetColor
 clear
 }
 ########################
