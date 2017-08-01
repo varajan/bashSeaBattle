@@ -1,0 +1,755 @@
+#! /bin/bash
+
+########################
+SetBold()
+{
+if [ "$1" -eq "0" ]
+then
+	tput bold
+else
+	tput me
+fi
+}
+########################
+SetBackgroundColor()
+{
+case $1 in
+("black")   color="0" ;;
+("red")     color="1" ;;
+("green")   color="2" ;;
+("yellow")  color="3" ;;
+("blue")    color="4" ;;
+("magenta") color="5" ;;
+("cyan")    color="6" ;;
+("white")   color="7" ;;
+(*)			color="9" ;;
+esac
+tput setab $color
+}
+########################
+SetColor()
+{
+case $1 in
+("black")   color="0" ;;
+("red")     color="1" ;;
+("green")   color="2" ;;
+("yellow")  color="3" ;;
+("blue")    color="4" ;;
+("magenta") color="5" ;;
+("cyan")    color="6" ;;
+("white")   color="7" ;;
+(*)			color="9" ;;
+esac
+tput setaf $color
+}
+########################
+showLetter()
+{
+letter=$1
+row=$2
+colum=$3
+SetColor $4
+
+case $letter in
+( "(" )
+row=$(($row - 2))
+tput cup $row $colum; echo "   #"; row=$(($row + 1))
+tput cup $row $colum; echo "  #" ; row=$(($row + 1))
+tput cup $row $colum; echo " #"  ; row=$(($row + 1))
+tput cup $row $colum; echo " #"  ; row=$(($row + 1))
+tput cup $row $colum; echo " #"	 ; row=$(($row + 1))
+tput cup $row $colum; echo " #"	 ; row=$(($row + 1))
+tput cup $row $colum; echo "  #" ; row=$(($row + 1))
+tput cup $row $colum; echo "   #";;
+( ")" )
+row=$(($row - 2))
+tput cup $row $colum; echo "#"  ; row=$(($row + 1))
+tput cup $row $colum; echo " #" ; row=$(($row + 1))
+tput cup $row $colum; echo "  #"; row=$(($row + 1))
+tput cup $row $colum; echo "  #"; row=$(($row + 1))
+tput cup $row $colum; echo "  #"; row=$(($row + 1))
+tput cup $row $colum; echo "  #"; row=$(($row + 1))
+tput cup $row $colum; echo " #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#"	;;
+( "!" )
+row=$(($row - 3))
+tput cup $row $colum; echo "   #" ; row=$(($row + 1))
+tput cup $row $colum; echo "   #" ; row=$(($row + 1))
+tput cup $row $colum; echo "   #" ; row=$(($row + 1))
+tput cup $row $colum; echo "   #" ; row=$(($row + 1))
+tput cup $row $colum; echo "   #" ; row=$(($row + 1))
+tput cup $row $colum; echo "   #" ; row=$(($row + 1))
+tput cup $row $colum; echo "    " ; row=$(($row + 1))
+tput cup $row $colum; echo "   #";;
+( "." )
+tput cup $row $colum; echo "    " ; row=$(($row + 1))
+tput cup $row $colum; echo "    " ; row=$(($row + 1))
+tput cup $row $colum; echo "    " ; row=$(($row + 1))
+tput cup $row $colum; echo "    " ; row=$(($row + 1))
+tput cup $row $colum; echo "   #";;
+( "," )
+tput cup $row $colum; echo "    " ; row=$(($row + 1))
+tput cup $row $colum; echo "    " ; row=$(($row + 1))
+tput cup $row $colum; echo "    " ; row=$(($row + 1))
+tput cup $row $colum; echo "    " ; row=$(($row + 1))
+tput cup $row $colum; echo "   #" ; row=$(($row + 1))
+tput cup $row $colum; echo "  #";;
+( "1" )
+tput cup $row $colum; echo "    # " ; row=$(($row + 1))
+tput cup $row $colum; echo "   ## " ; row=$(($row + 1))
+tput cup $row $colum; echo "  # # " ; row=$(($row + 1))
+tput cup $row $colum; echo "    # " ; row=$(($row + 1))
+tput cup $row $colum; echo "   ###";;
+( "2" )
+tput cup $row $colum; echo " ####  " ; row=$(($row + 1))
+tput cup $row $colum; echo "#    # " ; row=$(($row + 1))
+tput cup $row $colum; echo "    #  " ; row=$(($row + 1))
+tput cup $row $colum; echo "  #    " ; row=$(($row + 1))
+tput cup $row $colum; echo " ##### ";;
+( "3" )
+tput cup $row $colum; echo " #### " ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "   ## " ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo " #### ";;
+( "4" )
+tput cup $row $colum; echo "    # " ; row=$(($row + 1))
+tput cup $row $colum; echo "   ## " ; row=$(($row + 1))
+tput cup $row $colum; echo "  # # " ; row=$(($row + 1))
+tput cup $row $colum; echo " #### " ; row=$(($row + 1))
+tput cup $row $colum; echo "    # ";;
+( "5" )
+tput cup $row $colum; echo "######" ; row=$(($row + 1))
+tput cup $row $colum; echo "#     " ; row=$(($row + 1))
+tput cup $row $colum; echo "##### " ; row=$(($row + 1))
+tput cup $row $colum; echo "     #" ; row=$(($row + 1))
+tput cup $row $colum; echo "##### ";;
+( "6" )
+tput cup $row $colum; echo " #### " ; row=$(($row + 1))
+tput cup $row $colum; echo "#     " ; row=$(($row + 1))
+tput cup $row $colum; echo " #### " ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo " #### ";;
+( "7" )
+tput cup $row $colum; echo "#####" ; row=$(($row + 1))
+tput cup $row $colum; echo "   # " ; row=$(($row + 1))
+tput cup $row $colum; echo " ### " ; row=$(($row + 1))
+tput cup $row $colum; echo " #   " ; row=$(($row + 1))
+tput cup $row $colum; echo "#    ";;
+( "8" )
+tput cup $row $colum; echo " #### " ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo " #### " ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo " #### ";;
+( "9" )
+tput cup $row $colum; echo " #### " ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo " #### " ; row=$(($row + 1))
+tput cup $row $colum; echo "     #" ; row=$(($row + 1))
+tput cup $row $colum; echo " #### ";;
+( "0" )
+tput cup $row $colum; echo "  ### " ; row=$(($row + 1))
+tput cup $row $colum; echo " #  ##" ; row=$(($row + 1))
+tput cup $row $colum; echo " # # #" ; row=$(($row + 1))
+tput cup $row $colum; echo " ##  #" ; row=$(($row + 1))
+tput cup $row $colum; echo "  ### ";;
+( "a" )
+tput cup $row $colum; echo " ####" ; row=$(($row + 1))
+tput cup $row $colum; echo "#   #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#   #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#   #" ; row=$(($row + 1))
+tput cup $row $colum; echo " ### #";;
+( "A" )
+row=$(($row - 2))
+tput cup $row $colum; echo " ####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"; row=$(($row + 1))
+tput cup $row $colum; echo "######"; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"; row=$(($row + 1))
+tput cup $row $colum; echo "#    #";;
+( "b" )
+row=$(($row - 3))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#####"	;;
+( "B" )
+row=$(($row - 2))
+tput cup $row $colum; echo "#####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#####"	;;
+( "c" )
+tput cup $row $colum; echo " #####"	;	row=$(($row + 1))
+tput cup $row $colum; echo "#"		;	row=$(($row + 1))
+tput cup $row $colum; echo "#"		;	row=$(($row + 1))
+tput cup $row $colum; echo "#"		;	row=$(($row + 1))
+tput cup $row $colum; echo " #####";;
+( "C" )
+row=$(($row - 2))
+tput cup $row $colum; echo " #####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo " #####"	;;
+( "d" )
+row=$(($row - 3))
+tput cup $row $colum; echo "     #" ; row=$(($row + 1))
+tput cup $row $colum; echo "     #" ; row=$(($row + 1))
+tput cup $row $colum; echo "     #" ; row=$(($row + 1))
+tput cup $row $colum; echo " #####" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo " #####" ;;
+( "D" )
+row=$(($row - 2))
+tput cup $row $colum; echo "#####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#####" ;;
+( "e" )
+tput cup $row $colum; echo " ####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "######"	; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo " ####"	;;
+( "E" )
+row=$(($row - 2))
+tput cup $row $colum; echo "######"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    "	; row=$(($row + 1))
+tput cup $row $colum; echo "#    "	; row=$(($row + 1))
+tput cup $row $colum; echo "#####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    "	; row=$(($row + 1))
+tput cup $row $colum; echo "#    "	; row=$(($row + 1))
+tput cup $row $colum; echo "######" ;;
+( "f" )
+row=$(($row - 3))
+tput cup $row $colum; echo "  ####"	; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo "####"	; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		;;
+( "F" )
+row=$(($row - 2))
+tput cup $row $colum; echo "######"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    "	; row=$(($row + 1))
+tput cup $row $colum; echo "#    "	; row=$(($row + 1))
+tput cup $row $colum; echo "#####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    "	; row=$(($row + 1))
+tput cup $row $colum; echo "#    "	; row=$(($row + 1))
+tput cup $row $colum; echo "#"		;;
+("g")
+tput cup $row $colum; echo " #####"; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"; row=$(($row + 1))
+tput cup $row $colum; echo " #####"; row=$(($row + 1))
+tput cup $row $colum; echo "     #"; row=$(($row + 1))
+tput cup $row $colum; echo "     #"; row=$(($row + 1))
+tput cup $row $colum; echo " ####";;
+( "G" )
+row=$(($row - 2))
+tput cup $row $colum; echo " #### "	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#     "	; row=$(($row + 1))
+tput cup $row $colum; echo "#  ###"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo " #### " ;;
+( "h" )
+row=$(($row - 3))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #";;
+( "H" )
+row=$(($row - 2))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "######"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ;;
+( "i" )
+row=$(($row - 2));	  colum=$(($colum + 2))
+tput cup $row $colum; echo "#"	;	row=$(($row + 2))
+tput cup $row $colum; echo "#"	;	row=$(($row + 1))
+tput cup $row $colum; echo "#"	;	row=$(($row + 1))
+tput cup $row $colum; echo "#"	;	row=$(($row + 1))
+tput cup $row $colum; echo "#"	;	row=$(($row + 1))
+tput cup $row $colum; echo "#"	;;
+( "I" )
+row=$(($row - 2));	  colum=$(($colum + 2))
+tput cup $row $colum; echo "###";	row=$(($row + 1))
+tput cup $row $colum; echo " #"	;	row=$(($row + 1))
+tput cup $row $colum; echo " #"	;	row=$(($row + 1))
+tput cup $row $colum; echo " #"	;	row=$(($row + 1))
+tput cup $row $colum; echo " #"	;	row=$(($row + 1))
+tput cup $row $colum; echo " #"	;	row=$(($row + 1))
+tput cup $row $colum; echo "###";;
+("j")
+tput cup $row $colum; echo "   #"; row=$(($row + 2))
+tput cup $row $colum; echo "   #"; row=$(($row + 1))
+tput cup $row $colum; echo "   #"; row=$(($row + 1))
+tput cup $row $colum; echo "   #"; row=$(($row + 1))
+tput cup $row $colum; echo "   #"; row=$(($row + 1))
+tput cup $row $colum; echo "   #"; row=$(($row + 1))
+tput cup $row $colum; echo "###";;
+("J")
+row=$(($row - 2));
+tput cup $row $colum; echo "   ###"; row=$(($row + 1))
+tput cup $row $colum; echo "    #"; row=$(($row + 1))
+tput cup $row $colum; echo "    #"; row=$(($row + 1))
+tput cup $row $colum; echo "    #"; row=$(($row + 1))
+tput cup $row $colum; echo "    #"; row=$(($row + 1))
+tput cup $row $colum; echo "#   #"; row=$(($row + 1))
+tput cup $row $colum; echo " ###";;
+( "k" )
+row=$(($row - 3))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "# #"	; row=$(($row + 1))
+tput cup $row $colum; echo "##"		; row=$(($row + 1))
+tput cup $row $colum; echo "# #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#   #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #";;
+( "K" )
+row=$(($row - 2))
+tput cup $row $colum; echo "#   #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "# #"	; row=$(($row + 1))
+tput cup $row $colum; echo "##"		; row=$(($row + 1))
+tput cup $row $colum; echo "#  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#   #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #";;
+( "l" )
+row=$(($row - 3))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo "  ###"	;;
+( "L" )
+row=$(($row - 2))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo " #####"	;;
+( "m" )
+tput cup $row $colum; echo "######"  ; row=$(($row + 1))
+tput cup $row $colum; echo "#  #  #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#  #  #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#  #  #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#  #  #";;
+( "M" )
+row=$(($row - 2))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "##  ##" ; row=$(($row + 1))
+tput cup $row $colum; echo "# ## #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #";;
+( "n" )
+tput cup $row $colum; echo "#####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #";;
+( "N" )
+row=$(($row - 2))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "##   #" ; row=$(($row + 1))
+tput cup $row $colum; echo "# #  #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#  # #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#   ##" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #";;
+( "o" )
+tput cup $row $colum; echo " ####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo " ####"	;;
+( "O" )
+row=$(($row - 2))
+tput cup $row $colum; echo " #### " ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo " ####"	;;
+( "p" )
+tput cup $row $colum; echo " ####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#"		;;
+( "P" )
+row=$(($row - 2))
+tput cup $row $colum; echo " #### " ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#####" 	; row=$(($row + 1))
+tput cup $row $colum; echo "#    " 	; row=$(($row + 1))
+tput cup $row $colum; echo "#    " 	; row=$(($row + 1))
+tput cup $row $colum; echo "#"		;;
+( "q" )
+tput cup $row $colum; echo " ####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo " #####" ; row=$(($row + 1))
+tput cup $row $colum; echo "     #" ; row=$(($row + 1))
+tput cup $row $colum; echo "     #" ; row=$(($row + 1))
+tput cup $row $colum; echo "     #" ;;
+( "Q" )
+row=$(($row - 2))
+tput cup $row $colum; echo " ####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#   ##"	; row=$(($row + 1))
+tput cup $row $colum; echo " ### #"	;;
+( "r" )
+tput cup $row $colum; echo "# ###"	; row=$(($row + 1))
+tput cup $row $colum; echo "##   #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "#"		;;
+( "R" )
+row=$(($row - 2))
+tput cup $row $colum; echo "##### "	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "##### "	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	;;
+( "s" )
+tput cup $row $colum; echo " ####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo " ####" 	; row=$(($row + 1))
+tput cup $row $colum; echo "     #"	; row=$(($row + 1))
+tput cup $row $colum; echo " ####"	;;
+( "S" )
+row=$(($row - 2))
+tput cup $row $colum; echo " ####"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    "	; row=$(($row + 1))
+tput cup $row $colum; echo " #### "	; row=$(($row + 1))
+tput cup $row $colum; echo "     #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo " ####"	;;
+( "t" )
+row=$(($row - 3))
+tput cup $row $colum; echo "  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  #"	; row=$(($row + 1))
+tput cup $row $colum; echo " ####"	; row=$(($row + 1))
+tput cup $row $colum; echo "  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "   ###"	;;
+( "T" )
+row=$(($row - 2))
+tput cup $row $colum; echo "#####"	; row=$(($row + 1))
+tput cup $row $colum; echo "  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  #"	;;
+( "u" )
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo "#    #" ; row=$(($row + 1))
+tput cup $row $colum; echo " ######";;
+( "U" )
+row=$(($row - 2))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo " ####"	;;
+( "v" )
+tput cup $row $colum; echo "#    #"; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"; row=$(($row + 1))
+tput cup $row $colum; echo " #  #" ; row=$(($row + 1))
+tput cup $row $colum; echo "  ##" ;;
+( "V" )
+row=$(($row - 2))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo " #  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  ##"	;;
+( "w" )
+tput cup $row $colum; echo "# # #"; row=$(($row + 1))
+tput cup $row $colum; echo "# # #"; row=$(($row + 1))
+tput cup $row $colum; echo "# # #"; row=$(($row + 1))
+tput cup $row $colum; echo "# # #"; row=$(($row + 1))
+tput cup $row $colum; echo " ###";;
+( "W" )
+row=$(($row - 2))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "# ## #"	; row=$(($row + 1))
+tput cup $row $colum; echo "# ## #"	; row=$(($row + 1))
+tput cup $row $colum; echo " #  #"	;;
+( "x" )
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo " #  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  ##"	; row=$(($row + 1))
+tput cup $row $colum; echo " #  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #";;
+( "X" )
+row=$(($row - 2))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo " #  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  ##"	; row=$(($row + 1))
+tput cup $row $colum; echo "  ##"	; row=$(($row + 1))
+tput cup $row $colum; echo " #  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	;;
+("y")
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo " #####"	; row=$(($row + 1))
+tput cup $row $colum; echo "     #"	; row=$(($row + 1))
+tput cup $row $colum; echo " #   #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  ###"	;;
+( "Y" )
+row=$(($row - 2))
+tput cup $row $colum; echo "#    #"	; row=$(($row + 1))
+tput cup $row $colum; echo " #  #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  ##"	; row=$(($row + 1))
+tput cup $row $colum; echo "   #"	; row=$(($row + 1))
+tput cup $row $colum; echo "   #"	; row=$(($row + 1))
+tput cup $row $colum; echo "   #"	; row=$(($row + 1))
+tput cup $row $colum; echo "   #"	;;
+( "z" )
+tput cup $row $colum; echo "#####"	; row=$(($row + 1))
+tput cup $row $colum; echo "   #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  #"	; row=$(($row + 1))
+tput cup $row $colum; echo " #"		; row=$(($row + 1))
+tput cup $row $colum; echo "#####"	;;
+( "Z" )
+row=$(($row - 2))
+tput cup $row $colum; echo "######"	; row=$(($row + 1))
+tput cup $row $colum; echo "    #"	; row=$(($row + 1))
+tput cup $row $colum; echo "   #"	; row=$(($row + 1))
+tput cup $row $colum; echo "  #"	; row=$(($row + 1))
+tput cup $row $colum; echo " # "	; row=$(($row + 1))
+tput cup $row $colum; echo "#"		; row=$(($row + 1))
+tput cup $row $colum; echo "######"	;;
+#abcdefghijklmnopqrst uvwxyz
+esac
+tput cup $(($2+9)) 1
+}
+########################
+TypeWord()
+{
+word=$1
+x=$2; y=$3
+
+for ((i=1; i <= `echo "$word" | awk '{print length($0)}'`; i++ ))
+do 
+	symbol=`echo "$word" $i | awk '{print substr($1, $2, 1)}'`
+	showLetter $symbol $x $y $4
+	y=$((y + 7))
+done
+
+}
+########################
+ShowMatrix()
+{
+  SetColor 
+  gotoXY $1 2 2 -1
+  echo "        Player $1"
+  gotoXY $1 2 2 0
+  echo "  |a|b|c|d|e|f|g|h|j|k| "
+
+for ((show_matrix_i=1; $show_matrix_i<11; show_matrix_i++))
+  do
+  gotoXY $1 2 2 $show_matrix_i
+	if [ "$show_matrix_i" = 10 ]
+	  then
+	   echo -n "$show_matrix_i|"
+	  else
+	   echo -n " $show_matrix_i|"
+	  fi
+#################
+#1 - empty		#
+#2 - ship		#
+#3 - round ship	#
+#4 - shotdone	#
+#5 - shiphitted	#
+#6 - shipdown	#
+#################
+	for letter in $string
+	do
+		temp=`eval echo "$1"$letter$show_matrix_i`
+		value=`eval echo "$"$temp`
+		case $value in
+		("1") echo -n "_|" ;;
+		("2") if [ "$1" = "P1" ]
+			then
+				if [ "$HotSeat" = "No" ]
+				  then
+					SetBackgroundColor green; echo -n " "; SetBackgroundColor; echo -n "|" 
+				  else
+				  	echo -n "_|"
+				  fi
+			else
+				echo -n "_|"
+			fi;;
+		("3") echo -n "_|" ;;
+		("4") SetColor blue; echo -n "x"; SetColor; echo -n "|" ;;
+		("5") SetBackgroundColor green; SetColor red; echo -n "x"; SetBackgroundColor; SetColor; echo -n "|" ;;
+		("6") SetBackgroundColor red; echo -n " "; SetBackgroundColor; echo -n "|" ;;
+		esac
+	done
+	echo -n "$show_matrix_i"
+  done
+  gotoXY $1 2 2 $show_matrix_i
+  echo "  |a|b|c|d|e|f|g|h|j|k| "
+  echo
+  tput cd
+
+  if [ "$Now_Shooting" = "2" ]
+  then echo "Player 1! It's your turn!"; echo
+  else 
+    if [ "$HotSeat" = "Yes" ] ; then echo "Player 2! It's your turn!"; echo; fi
+    if [ "$BotMode" = "Yes" ] ; then echo "Player 2! It's your turn!"; echo; fi
+  fi
+}
+########################
+About()
+{
+	clear;
+	
+	TypeWord "Sea_Battle" 3 1 red
+	TypeWord "$version" 8 1 blue
+	SetColor green
+	echo "   Made by Dmitrenko Sergiy"
+	echo "    To make a shot, just type it. E.g. \"b7\"."
+	echo "    Type \"rand\" to make random shot."
+	echo; SetColor
+	echo -n "Press [Return] to continue..."
+	read
+}
+########################
+Menu()
+{
+answer=$1
+while [ "$answer" != "exit" ]
+do
+	case "$answer" in
+		("one") InitVars; HotSeat="No";		ReadAILevel;	Game;;
+		("two") InitVars; Player2="Human";	Game;;
+		("bot") InitVars; Player1="AI";		HotSeat="No";	BotMode="Yes"; Game;;
+		("inf") About;;
+	esac
+
+	clear
+	SetColor red; SetBackgroundColor; SetBold 0
+	echo
+	echo
+	echo
+	echo " Sea Battle. BASH-script version $version_menu"
+	echo
+	SetBold 1; SetColor yellow
+	echo " Please, make Your choice:"; echo 
+	SetColor magenta; echo -n " 'one' "; SetColor cyan
+	echo "- single-player (against computer)."
+	SetColor magenta; echo -n " 'two' "; SetColor cyan
+	echo "- multi-player (two users on one computer)."
+	SetColor magenta; echo -n " 'bot' "; SetColor cyan
+	echo "- computer vs computer (just watch the battle)."
+	SetColor magenta; echo -n " 'inf' "; SetColor cyan
+	echo "- About program."
+	echo
+	SetColor green; echo -n " 'exit' "; SetColor cyan
+	echo "- Exit. [ Or press Ctrl+C ] "
+
+	SetColor
+	echo
+	echo -n " > "
+	read answer
+	echo
+done
+clear
+}
+########################
+ReadAILevel()
+{
+	clear
+	echo
+	SetColor red; echo "Choose Bot level."
+	echo
+	SetColor magenta; echo -n "1"; SetColor cyan; echo " - Easy."
+	SetColor magenta; echo -n "2"; SetColor cyan; echo " - Normal."
+	SetColor magenta; echo -n "3"; SetColor cyan; echo " - Advanced."
+	SetColor magenta; echo -n "4"; SetColor cyan; echo " - Hard."
+	echo
+
+	OK=1
+	until [ "$OK" = "0" ]
+	do
+		SetColor green
+		echo -n "[Number]: "
+		SetColor
+		read level
+		case $level in
+			("1" | "2" | "3" | "4") OK=0;;
+			(*)			 			OK=1;;
+		esac
+	done
+}
+########################

@@ -1,0 +1,588 @@
+#! /bin/bash
+
+########################
+FRandomize()
+{
+FR_1=`date "+%H"`
+FR_2=`date "+%M"`
+FR_3=`date "+%S"`
+
+temp_FR=`echo $FR_1 | awk '{print substr($1, 1, 1)}'`
+if [ "$temp_FR" = "0" ]
+	then
+		FR_1=`echo $FR_1 | awk '{print substr($1, 2, 1)}'`
+	fi
+temp_FR=`echo $FR_2 | awk '{print substr($1, 1, 1)}'`
+if [ "$temp_FR" = "0" ]
+	then
+		FR_2=`echo $FR_2 | awk '{print substr($1, 2, 1)}'`
+	fi
+temp_FR=`echo $FR_3 | awk '{print substr($1, 1, 1)}'`
+if [ "$temp_FR" = "0" ]
+	then
+		FR_3=`echo $FR_3 | awk '{print substr($1, 2, 1)}'`
+	fi
+
+A=$((FR_1*57+FR_2*FR_3+$$+$?+$!+$#))
+B=$((FR_1+FR_2+FR_3%57+$$+$?+$!+$#))
+}
+########################
+FRandom()
+{
+	X1=$(dd if=/dev/random bs=1 count=1 2> /dev/null)
+	X2=$(echo $X1 | perl -e '$/ = undef; my $val = <STDIN>; print ord($val);')
+	RandNumber=$((X2%$1))
+	return $RandNumber
+}
+########################
+Waiting()
+{
+lastCP="0"
+while [ "$lastCP" -eq "0" ]
+do
+	sleep 1	
+	echo -n .
+	lastCP=`ps -x | grep "$!" | grep -v grep > /dev/null; echo $?`
+done
+	echo
+}
+########################
+gotoXY()
+{
+if [ "$1" = "P1" ]
+  then
+    tput cup $(($2+$4)) $3
+  else
+    tput cup $(($2+$4)) $(($3+27))
+  fi
+}
+########################
+SetShips()
+{
+	clear
+	echo
+	echo "Generate ships for player $1 randomly or set manually? [R/M]"
+
+	OK=1
+	until [ "$OK" = "0" ]
+	do
+		echo -n "> "
+		read answer
+		case $answer in
+		('r' | 'R') SetShipsRandom $1; OK=0;;
+		('m' | 'M') SetShipsManual $1; OK=0;;
+		esac
+	done
+}
+########################
+ShowSHips()
+{
+  clear
+  SetColor 
+  gotoXY P1 2 2 -1
+  echo "        Player $1"  
+  gotoXY P1 2 2 0
+  echo "  |a|b|c|d|e|f|g|h|j|k| "
+
+for ((show_matrix_i=1; $show_matrix_i<11; show_matrix_i++))
+  do
+  gotoXY P1 2 2 $show_matrix_i
+	if [ "$show_matrix_i" = 10 ]
+	  then
+	   echo -n "$show_matrix_i|"
+	  else
+	   echo -n " $show_matrix_i|"
+	  fi
+#################
+#1 - empty		#
+#2 - ship		#
+#3 - round ship	#
+#4 - shotdone	#
+#5 - shiphitted	#
+#6 - shipdown	#
+#################
+	for letter in $string
+	do
+		temp=`eval echo "$1"$letter$show_matrix_i`
+		value=`eval echo "$"$temp`
+		case $value in
+		("1") echo -n "_|" ;;
+		("2") SetBackgroundColor green; echo -n " "; SetBackgroundColor; echo -n "|";;
+		("3") SetColor green; echo -n "x"; SetColor; echo -n "|" ;;
+		esac
+	done
+	echo -n "$show_matrix_i"
+  done
+  gotoXY P1 2 2 $show_matrix_i
+  echo "  |a|b|c|d|e|f|g|h|j|k| "
+  echo
+  tput cd
+}
+########################
+SetShipsManual()
+{
+string="a b c d e f g h j k"
+for letter in $string
+  do
+	for ((i=1; $i<11; i++))
+	do
+		eval "$1"$letter$i="1"
+	done
+  done
+str="_abcdefghjk_"
+ship_set="OK"
+
+for ((i=0; $i<10; i++))
+	do
+		ShowSHips $1
+		again="true"
+		until [ $again = "false" ]
+		do
+			case $i in
+				("0") # "4-cell ship"
+				ship="4-cell"
+				lt_number=8
+				check_j=6
+				vertical_k=5
+				vertical_j=4
+				;;
+				("1" | "2") # "3-cell ship"
+				ship="3-cell"
+				lt_number=9
+				check_j=5
+				vertical_k=4
+				vertical_j=3
+				;;
+				("3" | "4" | "5") # "2-cell ship"
+				ship="2-cell"
+				lt_number=10
+				check_j=4
+				vertical_k=3
+				vertical_j=2
+				;;
+				("6" | "7" | "8" | "9" ) 
+				ship="1-cell"
+				lt_number=11
+				check_j=3
+				vertical_k=2
+				vertical_j=1
+				;;
+			esac
+
+		if [ "$ship_set" = "OK" ]
+		  then
+			echo "Now set possition for $ship ship."
+			echo
+		  else
+			SetColor red
+			echo "Can't put ship in this position!"
+			SetColor
+		  fi
+		ship_set="NO"
+
+		if [ "$ship" = "1-cell" ]
+		then 
+			h=0
+		else
+			OK=1
+			until [ "$OK" = "0" ]
+			do
+				echo -n "The ship will be vertical/horizontal oriented? [v/h]: "
+				read ANS
+				case $ANS in
+				("v" | "V") h="1"; OK=0;;
+				("h" | "H") h="0"; OK=0;;
+				esac
+			done
+		fi
+
+		OK=1
+		until [ "$OK" = "0" ]
+		do
+			echo -n "Type top left coordinate of the ship: "
+			read ANS
+			
+			pz=`eval echo "$"$1$ANS`
+			if [ "$pz" = "1" ]; then OK=0; fi			
+		done
+		x=`echo $ANS "abcdefghjk" | awk '{print index($2,substr($1, 1, 1))}'`
+		y=`echo $ANS | awk '{print substr($1, 2, 2)}'`
+		
+		if [ "$h" = "0" ]
+			then # - horizontal
+			if [ $x -lt $lt_number ]; then
+				chek=""
+				for ((j=1; $j<$((check_j-1)); j++)) 
+					do
+						position=`echo $str $(($x+$j)) | awk '{print substr($1, $2, 1)}'`
+						temp=`eval echo "$1"$position$y`
+						value=`eval echo "$"$temp`
+						chek="$chek""$value"
+					done
+				case "$chek" in
+				("1" | "11" | "111" | "1111")	cheking="OK";;
+				(*) 							cheking="NO";;
+				esac
+				if [ "$cheking" = "OK" ]
+					then
+						y1=$y; y2=$(($y-1)); y3=$(($y+1))
+						for ((k=0; $k<$((check_j)); k++))
+							do
+								position=`echo $str $(($x+$k)) | awk '{print substr($1, $2, 1)}'`
+								temp=`eval echo "$1"$position$y1`; eval "$temp"="3"
+								temp=`eval echo "$1"$position$y2`; eval "$temp"="3"
+								temp=`eval echo "$1"$position$y3`; eval "$temp"="3"
+							done
+						for ((j=1; $j<$((check_j-1)); j++)) 
+							do
+								position=`echo $str $(($x+$j)) | awk '{print substr($1, $2, 1)}'`
+								temp=`eval echo "$1"$position$y`
+								eval $temp="2"
+							done
+						again="false"
+						ship_set="OK"
+				fi; fi
+			else # - vertical
+			if [ $y -lt $lt_number ]; then
+				chek=""
+				position=`echo $str $(($x+1)) | awk '{print substr($1, $2, 1)}'`
+				for ((j=0; $j<$vertical_j; j++)) 
+					do
+						yy=$(($y+$j))
+						temp=`eval echo "$1"$position$yy`
+						value=`eval echo "$"$temp`
+						chek="$chek""$value"
+						
+					done
+				case "$chek" in
+				("1" | "11" | "111" | "1111")	cheking="OK";;
+				(*) 							cheking="NO";;
+				esac
+				if [ "$cheking" = "OK" ]
+					then
+						position0=`echo $str $x | awk '{print substr($1, $2, 1)}'`
+						position1=`echo $str $(($x+1)) | awk '{print substr($1, $2, 1)}'`
+						position2=`echo $str $(($x+2)) | awk '{print substr($1, $2, 1)}'`
+						for ((k=-1; $k<vertical_k; k++))
+							do
+								yy=$(($y+$k))
+								temp=`eval echo "$1"$position0$yy`; eval "$temp"="3"
+								temp=`eval echo "$1"$position1$yy`; eval "$temp"="3"
+								temp=`eval echo "$1"$position2$yy`; eval "$temp"="3"
+							done
+						for ((j=0; $j<$vertical_j; j++)) 
+							do	
+								yy=$(($y+$j))
+								position=`echo $str $(($x+1)) | awk '{print substr($1, $2, 1)}'`
+								temp=`eval echo "$1"$position$yy`
+								eval $temp="2"
+							done
+						again="false"
+						ship_set="OK"
+				fi; fi
+		fi
+		done
+	done
+
+string="a b c d e f g h j k"
+for letter in $string
+  do
+	eval "$1""$letter""0"="9"
+	eval "$1""$letter""11"="9"
+  done
+ShowSHips $1
+echo
+echo -n "Press [Return] to continue..."
+read
+}
+########################
+SetShipsRandom()
+{
+string="a b c d e f g h j k"
+for letter in $string
+  do
+	for ((i=1; $i<11; i++))
+	do
+		eval "$1"$letter$i="1"
+	done
+  done
+
+SetColor; echo -n "Generating ships for Player $1 "
+str="_abcdefghjk_"
+	FRandomize
+	for ((i=0; $i<10; i++))
+	do
+		echo -n .
+		again="true"
+		until [ $again = "false" ]
+		do
+			FRandom 10; x=$((RandNumber+1))
+			FRandom 10; y=$((RandNumber+1))
+
+			case $i in
+				("0") # "4-cell ship"
+				lt_number=8
+				check_j=6
+				vertical_k=5
+				vertical_j=4
+				;;
+				("1" | "2") # "3-cell ship"
+				lt_number=9
+				check_j=5
+				vertical_k=4
+				vertical_j=3
+				;;
+				("3" | "4" | "5") # "2-cell ship"
+				lt_number=10
+				check_j=4
+				vertical_k=3
+				vertical_j=2
+				;;
+				("6" | "7" | "8" | "9" ) 
+				lt_number=11
+				check_j=3
+				vertical_k=2
+				vertical_j=1
+				;;
+			esac
+
+		FRandom 100; h=$(($RandNumber%2));
+		if [ "$h" = "0" ]
+			then # - horizontal
+			if [ $x -lt $lt_number ]; then
+				chek=""
+				for ((j=1; $j<$((check_j-1)); j++)) 
+					do
+						position=`echo $str $(($x+$j)) | awk '{print substr($1, $2, 1)}'`
+						temp=`eval echo "$1"$position$y`
+						value=`eval echo "$"$temp`
+						chek="$chek""$value"
+					done
+				case "$chek" in
+				("1" | "11" | "111" | "1111")	cheking="OK";;
+				(*) 							cheking="NO";;
+				esac
+				if [ "$cheking" = "OK" ]
+					then
+						y1=$y; y2=$(($y-1)); y3=$(($y+1))
+						for ((k=0; $k<$((check_j)); k++))
+							do
+								position=`echo $str $(($x+$k)) | awk '{print substr($1, $2, 1)}'`
+								temp=`eval echo "$1"$position$y1`; eval "$temp"="3"
+								temp=`eval echo "$1"$position$y2`; eval "$temp"="3"
+								temp=`eval echo "$1"$position$y3`; eval "$temp"="3"
+							done
+						for ((j=1; $j<$((check_j-1)); j++)) 
+							do
+								position=`echo $str $(($x+$j)) | awk '{print substr($1, $2, 1)}'`
+								temp=`eval echo "$1"$position$y`
+								eval $temp="2"
+							done
+						again="false"
+				fi; fi
+			else # - vertical
+			if [ $y -lt $lt_number ]; then
+				chek=""
+				position=`echo $str $(($x+1)) | awk '{print substr($1, $2, 1)}'`
+				for ((j=0; $j<$vertical_j; j++)) 
+					do
+						yy=$(($y+$j))
+						temp=`eval echo "$1"$position$yy`
+						value=`eval echo "$"$temp`
+						chek="$chek""$value"
+						
+					done
+				case "$chek" in
+				("1" | "11" | "111" | "1111")	cheking="OK";;
+				(*) 							cheking="NO";;
+				esac
+				if [ "$cheking" = "OK" ]
+					then
+						position0=`echo $str $x | awk '{print substr($1, $2, 1)}'`
+						position1=`echo $str $(($x+1)) | awk '{print substr($1, $2, 1)}'`
+						position2=`echo $str $(($x+2)) | awk '{print substr($1, $2, 1)}'`
+						for ((k=-1; $k<vertical_k; k++))
+							do
+								yy=$(($y+$k))
+								temp=`eval echo "$1"$position0$yy`; eval "$temp"="3"
+								temp=`eval echo "$1"$position1$yy`; eval "$temp"="3"
+								temp=`eval echo "$1"$position2$yy`; eval "$temp"="3"
+							done
+						for ((j=0; $j<$vertical_j; j++)) 
+							do	
+								yy=$(($y+$j))
+								position=`echo $str $(($x+1)) | awk '{print substr($1, $2, 1)}'`
+								temp=`eval echo "$1"$position$yy`
+								eval $temp="2"
+							done
+						again="false"
+				fi; fi
+		fi
+
+		done
+	done
+
+string="a b c d e f g h j k"
+for letter in $string
+  do
+	eval "$1""$letter""0"="9"
+	eval "$1""$letter""11"="9"
+  done
+echo Done.
+}
+########################
+CheckShip()
+{
+	t_0="Z"; t_1="a"; t_2="b"; t_3="c"; t_4="d"; t_5="e"
+	t_6="f"; t_7="g"; t_8="h"; t_9="j"; t_10="k"; t_11="A"
+	str="abcdefghjk"
+	x=`echo $1 $str | awk '{print index($2,substr($0, 1, 1))}'`
+	y=`echo $1 | awk '{print substr($0, 2, 2)}'`
+	min_x=$x
+	max_x=$x
+	min_y=$y
+	max_y=$y
+
+# ------- seek for begin of the ship
+	R="1"
+	until [ "$R" = "0" ]
+		do
+			min=$(($min_x-1))
+			temp_tt=`eval echo "t_""$min"`
+			tt=`eval echo "$"$temp_tt`
+			temp=`eval echo "P""$Now_Shooting""$tt""$min_y"`
+			value=`eval echo "$"$temp`
+			case $value in
+			("2" | "5") min_x=$min;;
+			(*) R="0";;
+			esac
+		done
+# ------- seek for begin of the ship. by Y axes
+	R="1"
+	until [ "$R" = "0" ]
+		do
+			min=$(($min_y-1))
+			temp_tt=`eval echo "t_""$min_x"`
+			tt=`eval echo "$"$temp_tt`
+			temp=`eval echo "P""$Now_Shooting""$tt""$min"`
+			value=`eval echo "$"$temp`
+			case $value in
+			("2" | "5") min_y=$min;;
+			(*) R="0";;
+			esac
+		done
+# ------- seek for begin of the ship. End
+# -------
+# ------- seek for end of the ship
+	R="1"
+	until [ "$R" = "0" ]
+		do
+			max=$(($max_x+1))
+			temp_tt=`eval echo "t_""$max"`
+			tt=`eval echo "$"$temp_tt`
+			temp=`eval echo "P""$Now_Shooting""$tt""$max_y"`
+			value=`eval echo "$"$temp`
+			case $value in
+			("2" | "5") max_x=$max;;
+			(*) R="0";;
+			esac
+		done
+# ------- seek for end of the ship. by Y axes
+	R="1"
+	until [ "$R" = "0" ]
+		do
+			max=$(($max_y+1))
+			temp_tt=`eval echo "t_""$max_x"`
+			tt=`eval echo "$"$temp_tt`
+			temp=`eval echo "P""$Now_Shooting""$tt""$max"`
+			value=`eval echo "$"$temp`
+			case $value in
+			("2" | "5") max_y=$max;;
+			(*) R="0";;
+			esac
+		done
+# ------- seek for end of the ship. End
+
+if [ "$max_y" = "$min_y" ]
+then
+	down="Yes"
+	for ((CheckShip_i=$min_x; $CheckShip_i < $(($max_x+1)); CheckShip_i++))
+	do
+		temp_tt=`eval echo "t_""$CheckShip_i"`
+		tt=`eval echo "$"$temp_tt`
+		temp=`eval echo "P""$Now_Shooting""$tt""$y"`
+		value=`eval echo "$"$temp`
+		if [ "$value" != "5" ]; then down="no"; fi
+	done
+else
+	down="Yes"
+	for ((CheckShip_i=$min_y; $CheckShip_i < $(($max_y+1)); CheckShip_i++))
+	do
+		temp_tt=`eval echo "t_""$x"`
+		tt=`eval echo "$"$temp_tt`
+		temp=`eval echo "P""$Now_Shooting""$tt""$CheckShip_i"`
+		value=`eval echo "$"$temp`
+		if [ "$value" != "5" ]; then down="no"; fi
+	done
+fi
+
+if [ "$down" = "Yes" ]
+then
+	if [ "$max_y" = "$min_y" ]
+	then
+		y1=$y; y2=$(($y-1)); y3=$(($y+1))
+		for ((CheckShip_i=$(($min_x-1)); $CheckShip_i<$(($max_x+2)); CheckShip_i++))
+			do
+				temp_tt=`eval echo "t_"$CheckShip_i`
+				tt=`eval echo "$"$temp_tt`
+				temp=`eval echo "P""$Now_Shooting""$tt"$y1`; eval "$temp"="4"
+				temp=`eval echo "P""$Now_Shooting""$tt"$y2`; eval "$temp"="4"
+				temp=`eval echo "P""$Now_Shooting""$tt"$y3`; eval "$temp"="4"
+			done
+		for ((CheckShip_i=$min_x; $CheckShip_i<$(($max_x+1)); CheckShip_i++))
+		do
+			temp_tt=`eval echo "t_""$CheckShip_i"`
+			tt=`eval echo "$"$temp_tt`
+			temp=`eval echo "P""$Now_Shooting""$tt""$y"`
+			eval $temp="6"
+		done
+	else
+		position0=`echo $str $x | awk '{print substr($1, $2, 1)}'`
+		position1=`echo $str $(($x+1)) | awk '{print substr($1, $2, 1)}'`
+		position2=`echo $str $(($x-1)) | awk '{print substr($1, $2, 1)}'`
+		for (( CheckShip_i=$((min_y-1)); $CheckShip_i<$(($max_y+2)); CheckShip_i++ ))
+			do
+				temp=`eval echo "P""$Now_Shooting"$position0$CheckShip_i`; eval "$temp"="4"
+				temp=`eval echo "P""$Now_Shooting"$position1$CheckShip_i`; eval "$temp"="4"
+				temp=`eval echo "P""$Now_Shooting"$position2$CheckShip_i`; eval "$temp"="4"
+			done
+
+		for ((CheckShip_i=$((min_y)); $CheckShip_i<$(($max_y+1)); CheckShip_i++))
+		do
+			temp_tt=`eval echo "t_""$x"`
+			tt=`eval echo "$"$temp_tt`
+			temp=`eval echo "P""$Now_Shooting""$tt""$CheckShip_i"`
+			eval $temp="6"
+		done
+	fi
+
+	eval "P"$Now_Shooting"Last_Shot"="a0"
+	eval "P"$Now_Shooting"Prev_Shot"="a0"
+
+	## put here: Player% sent ship down!
+	if [ "$Now_Shooting" = "1" ]
+		then
+		  P1Ships_down=$((P1Ships_down+1))
+		else
+		  P2Ships_down=$((P2Ships_down+1))
+		 fi
+fi
+
+if [ "$down" = "Yes" ]
+then
+	return 0
+else
+	return 1
+fi	
+}
+########################

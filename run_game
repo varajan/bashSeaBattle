@@ -1,0 +1,390 @@
+#! /bin/bash
+
+########################
+ChangePlayer()
+{
+if [ "$Now_Shooting" = "1" ]
+then
+	Now_Shooting=2
+else
+	Now_Shooting=1
+fi
+}
+########################
+GameOver()
+{
+if [ "$P1Ships_down" -eq 10 ]
+	then
+		return 0
+	else
+		if [ "$P2Ships_down" -eq 10 ]
+			then 
+				return 0
+			else
+				return 1
+			fi
+	fi
+}
+########################
+OnFinish()
+{
+clear
+if [ "$P2Ships_down" -eq 10 ]
+	then
+		TypeWord "P1_wins!" 5 3 cyan
+	else
+		TypeWord "P2_wins!" 5 3 magenta
+	fi
+echo
+echo "P1 accuracy = $((P2Hits*100/$P2Shots)).$((P2Hits*100%$P2Shots*100/$P2Shots))%"
+echo "P2 accuracy = $((P1Hits*100/$P1Shots)).$((P1Hits*100%$P1Shots*100/$P1Shots))%"
+echo
+echo -n "Press [Enter] to continue..."
+read
+tput me
+clear
+}
+########################
+Check()
+{
+	temp=`eval echo "P$Now_Shooting""$1"`
+	value=`eval echo "$"$temp`
+	case $value in 
+	("1" | "2" | "3") return 0;;
+	(*) return 1;;
+	esac
+}
+########################
+DoShot()
+{
+	Shots_t=`eval echo "$""P$Now_Shooting"Shots`
+	eval "P$Now_Shooting"Shots=$(($Shots_t+1))
+
+	temp=`eval echo "P$Now_Shooting""$1"`
+	value=`eval echo "$"$temp`
+	if [ "$value" = "2" ]
+	then
+		Hits_t=`eval echo "$""P$Now_Shooting"Hits`
+		eval "P$Now_Shooting"Hits=$(($Hits_t+1))
+		echo -n "Shot done in [$1] - hit!"
+		eval "$temp"="5"
+		return 0
+	else
+		echo -n "Shot done in [$1] - miss!"
+		eval "$temp"="4"
+		return 1
+	fi
+}
+########################
+GetShot()
+{
+	if [ "$Now_Shooting" = "1" ]
+	then Z=2
+	else Z=1
+	fi
+
+	flag=`eval echo "Player"$Z`
+	player=`eval echo "$"$flag`
+	
+	if [ "$player" = "AI" ]
+	then sleep $timeToDelay; AI_turn; Current="AI"
+	else Human_turn; Current="Human"
+	fi
+}
+########################
+Human_turn()
+{
+	OK=1
+	until [ "$OK" = "0" ]
+	do
+		echo -n "Next shot: "
+		read Shot
+		if [ $Shot = "rand" ]; then Human_random; fi
+		OK=`Check $Shot; echo $?`
+		if [ $Shot = "exit" ]; then OK=0; fi
+	done
+	if [ $Shot != "exit" ]; then DoShot $Shot; fi
+	hit=`echo $?`
+}
+########################
+AI_turn()
+{
+# init last_ and prev_ shot variables.
+	temp=`eval echo "P"$Now_Shooting"Last_Shot"`
+	eval Last_Shot="$"$temp
+	temp=`eval echo "P"$Now_Shooting"Prev_Shot"`
+	eval Prev_Shot="$"$temp
+
+	if [ "$Last_Shot" = "a0" ]
+	then
+	  AI_random
+	  Prev_Shot="a0"
+	else
+	  AI_kill_ship
+	  fi
+# init last_ and prev_ shot variables.
+	eval "P"$Now_Shooting"Last_Shot"="$Last_Shot"
+	eval "P"$Now_Shooting"Prev_Shot"="$Prev_Shot"
+}
+########################
+AI_kill_ship()
+{
+	str="abcdefghjk"
+	x=`echo $Last_Shot $str | awk '{print index($2,substr($0, 1, 1))}'`
+	y=`echo $Last_Shot | awk '{print substr($0, 2, 2)}'`
+
+	if [ "$Prev_Shot" = "a0" ]
+	then
+		OK=1
+		until [ "$OK" = "0" ]
+		do
+		  FRandom 3; x_next=$(($RandNumber+$x-1))
+		  y_next=$y
+		  if [ "$x" = "$x_next" ]
+		  then FRandom 3; y_next=$(($RandNumber+$y-1)); fi
+		  position=`echo $str $x_next | awk '{print substr($1, $2, 1)}'`
+		  Shot=`eval echo $position$y_next`
+		  Check $Shot
+		  OK=`echo $?`
+		done
+	
+		DoShot $Shot
+		hit=`echo $?`
+		if [ "$hit" -eq 0 ]
+		  then
+			Prev_Shot=$Last_Shot
+			Last_Shot=$Shot
+		  fi
+	else
+		AI_find_next_cell
+		position=`echo $str $x_next | awk '{print substr($1, $2, 1)}'`
+		Shot=`eval echo $position$y_next`
+
+		DoShot $Shot
+	fi
+}
+########################
+AI_find_next_cell()
+{
+	str="abcdefghjk"
+	x=`echo "$Last_Shot" $str | awk '{print index($2,substr($0, 1, 1))}'`
+	y=`echo "$Last_Shot" | awk '{print substr($0, 2, 2)}'`
+	x_prev=`echo $Prev_Shot $str | awk '{print index($2,substr($0, 1, 1))}'`
+	y_prev=`echo $Prev_Shot | awk '{print substr($0, 2, 2)}'`
+
+	if [ "$x" = "$x_prev" ]
+	then
+	  x_next=$x
+	  y_next_m1=$(($y*2-$y_prev))
+	  y_next_m2=$(($y*3-$y_prev*2))
+	  y_next_p1=$(($y_prev*2-$y))
+	  y_next_p2=$(($y_prev*3-$y*2))
+	  flag1="minus"
+	  flag2="plus"
+
+	  position=`echo $str $x | awk '{print substr($1, $2, 1)}'`
+
+	temp=`eval echo "P"$Now_Shooting"$position"$y_next_m1`
+	value_1=`eval echo "$"$temp`
+	case $value_1 in 
+	("1" | "2" | "3") y_next=$y_next_m1;;
+	("5") flag2="minus";;
+	(*) flag1="plus";;
+	esac
+	
+	if [ "$flag2" = "minus" ] 
+	then
+		temp=`eval echo "P"$Now_Shooting"$position"$y_next_m2`
+		value_2=`eval echo "$"$temp`
+		case $value_2 in 
+		("1" | "2" | "3") y_next=$y_next_m2;;
+		(*) flag1="plus";;
+		esac
+	fi
+	
+	if [ "$flag1" = "plus" ]
+	then
+	  temp=`eval echo "P"$Now_Shooting"$position"$y_next_p1`
+	  value_3=`eval echo "$"$temp`
+	  case $value_3 in 
+	  ("1" | "2" | "3") y_next="$y_next_p1" ;;
+	  (*)				y_next="$y_next_p2" ;;
+	  esac
+	fi
+# - hznt=0
+	else
+	  y_next=$y
+	  x_next_m1=$(($x*2-$x_prev))
+	  x_next_m2=$(($x*3-$x_prev*2))
+	  x_next_p1=$(($x_prev*2-$x))
+	  x_next_p2=$(($x_prev*3-$x*2))
+	  flag1="minus"
+	  flag2="plus"
+	  
+	  position1=`echo $str $x_next_m1 | awk '{print substr($1, $2, 1)}'`
+	  position2=`echo $str $x_next_m2 | awk '{print substr($1, $2, 1)}'`
+
+	temp=`eval echo "P"$Now_Shooting$position1$y`
+	value_1=`eval echo "$"$temp`
+	case $value_1 in 
+	("1" | "2" | "3") x_next=$x_next_m1;;
+	("5") flag2="minus";;
+	(*) flag1="plus";;
+	esac
+
+	if [ "$flag2" = "minus" ] ; then
+		temp=`eval echo "P"$Now_Shooting$position2$y`
+		value_2=`eval echo "$"$temp`
+		case $value_2 in 
+		("1" | "2" | "3") x_next=$x_next_m2;;
+		(*) flag1="plus";;
+		esac; fi
+
+	if [ "$flag1" = "plus" ] ; then
+	position3=`echo $str $x_next_p1 | awk '{print substr($1, $2, 1)}'`
+	temp=`eval echo "P"$Now_Shooting$position3$y`
+	value_3=`eval echo "$"$temp`
+	case $value_3 in 
+	("1" | "2" | "3") x_next=$x_next_p1;;
+	(*) 			  x_next=$x_next_p2;;
+	esac; fi
+	fi
+}
+########################
+#!!!!!!!!!!!!!!!!!!!!!!!
+AI_random()
+{
+	eval AI_random_shots="$"P"$Now_Shooting"AI_random_shots
+	AI_random_shots=$(($AI_random_shots+1))
+	eval P"$Now_Shooting"AI_random_shots=$AI_random_shots
+
+	flag=$(($AI_random_shots%(12/$level) ))
+
+	str="abcdefghjk"
+	OK=1
+	until [ "$OK" = "0" ]
+	do
+		if [ "$flag" = "0" ]
+		then
+			FRandom 10; x=$((RandNumber+1))
+			FRandom 10; y=$((RandNumber+1))
+			position=`echo $str $x | awk '{print substr($1, $2, 1)}'`
+			Shot=`eval echo $position$y`
+			Pos=`eval echo "$"P"$Now_Shooting"$Shot`
+			if [ "$Pos" = "2" ]; then OK=0; fi
+		else
+			FRandom 10; x=$((RandNumber+1))
+			FRandom 10; y=$((RandNumber+1))
+			position=`echo $str $x | awk '{print substr($1, $2, 1)}'`
+			Shot=`eval echo $position$y`
+			Check $Shot
+			OK=`echo $?`
+		fi
+	done
+	
+	DoShot $Shot
+	hit=`echo $?`
+	if [ "$hit" -eq 0 ]
+		then
+		  Last_Shot=$Shot
+		else
+		  Last_Shot="a0"
+		fi
+}
+########################
+Human_random()
+{
+	str="abcdefghjk"
+	OK=1
+	until [ "$OK" = "0" ]
+	do
+		FRandom 10; x=$((RandNumber+1))
+		FRandom 10; y=$((RandNumber+1))
+		position=`echo $str $x | awk '{print substr($1, $2, 1)}'`
+		Shot=`eval echo $position$y`
+		Check $Shot
+		OK=`echo $?`
+	done
+}
+########################
+InitVars()
+{
+timeToDelay=2		# sleep $$ seconds.
+Current="AI"		# who is current player, human or AI.
+Player1="Human"		# "Human"
+Player2="AI"		# "AI"
+P1Shots=0			# qtty of shots in Player 1
+P2Shots=0			# 
+P1Hits=0			# qtty of hits in Player 1
+P2Hits=0			# 
+P1Ships_down=0		# qtty of ships of player 1 on the bottom.
+P2Ships_down=0		#
+Now_Shooting=2		# if "1", then shoot in Player1.
+Shot="a0"			#
+Last_Shot="a0"		# if 'a0' - last shot wasn't good, 
+					# if any other e.g. b7 - last hitted ship.
+Prev_Shot="a0"		# Shot before last.
+P1Last_Shot="a0"
+P1Prev_Shot="a0"
+P2Last_Shot="a0"
+P2Prev_Shot="a0"
+
+HotSeat="Yes"
+First_Shot="true"
+hit=1
+BotMode="No"
+P1AI_random_shots=0;
+P2AI_random_shots=0;
+level=3;			#1, 2, 3, 4#
+}
+########################
+Game()
+{
+SetBackgroundColor; SetColor; clear
+if [ "$Player1" = "Human" ]
+  then
+	SetShips P1
+  else
+	SetShipsRandom P1
+  fi
+if [ "$Player2" = "Human" ]
+  then
+	SetShips P2
+  else
+	SetShipsRandom P2
+  fi
+
+clear
+ShowMatrix P1
+ShowMatrix P2
+
+until GameOver
+do
+	if [ "$First_Shot" = "false" ]
+	  then
+	    if [ "$hit" = "0" ]
+	    then
+	    	eval ShowMatrix P"$Now_Shooting"
+	    else
+			if [ "$Now_Shooting" = "1" ]
+			then ShowMatrix P2
+			else ShowMatrix P1
+			fi
+		fi
+	  fi
+
+	GetShot
+	if [ "$hit" = "0" ]
+		then
+			CheckShip $Shot
+		else
+			ChangePlayer
+		fi
+	if [ "$Current" = "AI" ] ; then sleep $timeToDelay; else sleep 1; fi
+	First_Shot="false"
+	if [ $Shot = "exit" ]; then P1Ships_down=10; fi
+done
+
+if [ $Shot != "exit" ]; then OnFinish; fi
+}
+########################

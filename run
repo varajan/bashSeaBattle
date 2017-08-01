@@ -1,0 +1,27 @@
+#! /bin/bash
+
+########################################################################
+#
+# Made by Dmitrenko Sergiy
+# mailto: varajan@i.ua
+# v 1.3.0 build 21
+# 30/09/2009
+# 
+# SeaBattle game. Human & Computer. Type "rand" to make random shot.
+# 
+########################################################################
+
+# version for About screen
+version="____v1.3.0"
+# version string lenght should be max 10 symbols, ")" could be the 11th one.
+# version for Main menu screen
+version_menu="v1.3"
+
+
+. "$0""_math"
+. "$0""_graph"
+. "$0""_game"
+ 
+########################
+
+Menu $1
