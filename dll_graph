@@ -1,0 +1,193 @@
+#! /bin/bash
+
+########################
+SetBold()
+{
+if [ "$1" -eq "0" ]
+then
+	tput bold
+else
+	tput sgr0
+fi
+}
+########################
+SetBackgroundColor()
+{
+case $1 in
+("black")   color="0" ;;
+("red")     color="1" ;;
+("green")   color="2" ;;
+("yellow")  color="3" ;;
+("blue")    color="4" ;;
+("magenta") color="5" ;;
+("cyan")    color="6" ;;
+("white")   color="7" ;;
+(*)			color="0" ;;
+esac
+tput setab $color
+}
+########################
+SetColor()
+{
+case $1 in
+("black")   color="0" ;;
+("red")     color="1" ;;
+("green")   color="2" ;;
+("yellow")  color="3" ;;
+("blue")    color="4" ;;
+("magenta") color="5" ;;
+("cyan")    color="6" ;;
+("white")   color="7" ;;
+(*)			color="7" ;;
+esac
+tput setaf $color
+}
+########################
+ShowMatrix()
+{
+  SetColor 
+  gotoXY $1 2 2 -1
+  echo "        Player $1"
+  gotoXY $1 2 2 0
+  echo "  |a|b|c|d|e|f|g|h|j|k| "
+
+for ((show_matrix_i=1; $show_matrix_i<11; show_matrix_i++))
+  do
+  gotoXY $1 2 2 $show_matrix_i
+	if [ "$show_matrix_i" = 10 ]
+	  then
+	   echo -n "$show_matrix_i|"
+	  else
+	   echo -n " $show_matrix_i|"
+	  fi
+#################
+#1 - empty		#
+#2 - ship		#
+#3 - round ship	#
+#4 - shotdone	#
+#5 - shiphitted	#
+#6 - shipdown	#
+#################
+	for letter in $string
+	do
+		temp=`eval echo "$1"$letter$show_matrix_i`
+		value=`eval echo "$"$temp`
+		case $value in
+		("1") echo -n "_|" ;;
+		("2") if [ "$1" = "P1" ]
+			then
+				if [ "$HotSeat" = "No" ]
+				  then
+					SetBackgroundColor green; echo -n " "; SetBackgroundColor; echo -n "|" 
+				  else
+				  	echo -n "_|"
+				  fi
+			else
+				echo -n "_|"
+			fi;;
+		("3") echo -n "_|" ;;
+		("4") SetColor cyan; echo -n "x"; SetColor; echo -n "|" ;;
+		("5") SetBackgroundColor green; SetColor red; echo -n "x"; SetBackgroundColor; SetColor; echo -n "|" ;;
+		("6") SetBackgroundColor red; echo -n " "; SetBackgroundColor; echo -n "|" ;;
+		esac
+	done
+	echo -n "$show_matrix_i"
+  done
+  gotoXY $1 2 2 $show_matrix_i
+  echo "  |a|b|c|d|e|f|g|h|j|k| "
+  echo
+  tput ed
+
+  if [ "$Now_Shooting" = "2" ]
+  then echo "Player 1! It's your turn!"; echo
+  else 
+    if [ "$HotSeat" = "Yes" ] ; then echo "Player 2! It's your turn!"; echo; fi
+    if [ "$BotMode" = "Yes" ] ; then echo "Player 2! It's your turn!"; echo; fi
+  fi
+}
+########################
+About()
+{
+	clear;
+	
+	TypeWord "Sea_Battle" 3 1 red
+	TypeWord "$version" 8 1 blue
+	SetColor green
+	echo "   Made by Sergii Dmytrenko"
+	echo "    To make a shot, just type it. E.g. \"b7\"."
+	echo "    Type \"rand\" to make random shot."
+	echo; SetColor
+	echo -n "Press [Return] to continue..."
+	read
+}
+########################
+Menu()
+{
+answer=$1
+while [ "$answer" != "exit" ]
+do
+	case "$answer" in
+		("one") InitVars; HotSeat="No";		ReadAILevel;	Game;;
+		("two") InitVars; Player2="Human";	Game;;
+		("bot") InitVars; Player1="AI";		HotSeat="No";	BotMode="Yes"; Game;;
+		("inf") About;;
+	esac
+
+	clear
+	SetColor red; SetBackgroundColor; SetBold 0
+	echo
+	echo
+	echo
+	echo " Sea Battle. BASH-script version $version_menu"
+	echo
+	SetBold 1; SetColor yellow
+	echo " Please, make Your choice:"; echo 
+	SetColor magenta; echo -n " 'one' "; SetColor cyan
+	echo "- single-player (against computer)."
+	SetColor magenta; echo -n " 'two' "; SetColor cyan
+	echo "- multi-player (two users on one computer)."
+	SetColor magenta; echo -n " 'bot' "; SetColor cyan
+	echo "- computer vs computer (just watch the battle)."
+	SetColor magenta; echo -n " 'inf' "; SetColor cyan
+	echo "- About program."
+	echo
+	SetColor green; echo -n " 'exit' "; SetColor cyan
+	echo "- Exit. [ Or press Ctrl+C ] "
+
+	SetColor
+	echo
+	echo -n " > "
+	read answer
+	echo
+done
+
+SetBackgroundColor
+SetColor
+clear
+}
+########################
+ReadAILevel()
+{
+	clear
+	echo
+	SetColor red; echo "Choose Bot level."
+	echo
+	SetColor magenta; echo -n "1"; SetColor cyan; echo " - Easy."
+	SetColor magenta; echo -n "2"; SetColor cyan; echo " - Normal."
+	SetColor magenta; echo -n "3"; SetColor cyan; echo " - Advanced."
+	SetColor magenta; echo -n "4"; SetColor cyan; echo " - Hard."
+	echo
+
+	OK=1
+	until [ "$OK" = "0" ]
+	do
+		SetColor green
+		echo -n "[Number]: "
+		SetColor
+		read level
+		case $level in
+			("1" | "2" | "3" | "4") OK=0;;
+			(*)			 			OK=1;;
+		esac
+	done
+}

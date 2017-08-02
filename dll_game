@@ -251,7 +251,6 @@ AI_find_next_cell()
 	fi
 }
 ########################
-#!!!!!!!!!!!!!!!!!!!!!!!
 AI_random()
 {
 	eval AI_random_shots="$"P"$Now_Shooting"AI_random_shots

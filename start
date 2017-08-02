@@ -1,0 +1,14 @@
+#! /bin/bash
+
+# version for About screen
+version="____v1.3.1"
+
+# version for Main menu screen
+version_menu="v1.3.1"
+
+. "dll_game"
+. "dll_math"
+. "dll_graph"
+. "dll_symbols"
+ 
+Menu $1
