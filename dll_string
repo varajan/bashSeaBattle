@@ -1,0 +1,24 @@
+Length()
+{
+	string=$1
+	echo ${#string}
+}
+
+IndexOf()
+{
+	# $1 - long string
+	# $2 - short string to find
+	
+	# echo `expr index "$1" "$2"`
+	
+	echo $1 $2 | awk '{print index($1, $2)}'
+}
+
+SubString()
+{
+	# $1 - string
+	# $2 - starting index 1 based
+	# $3 - lenght
+	
+	echo $1 $2 $3 | awk '{print substr($1, $2, $3)}'
+}
