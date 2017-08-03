@@ -10,5 +10,6 @@ version_menu="v1.3.1"
 . "dll_math"
 . "dll_graph"
 . "dll_symbols"
+. "dll_string"
  
 Menu $1
