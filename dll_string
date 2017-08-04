@@ -1,3 +1,5 @@
+#! /bin/bash
+
 Length()
 {
 	string=$1

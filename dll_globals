@@ -1,0 +1,69 @@
+#! /bin/bash
+
+# version for About screen
+version="____v1.3.1"
+
+# version for Main menu screen
+version_menu="v1.3.1"
+
+InitVars()
+{
+timeToDelay=2		# sleep $$ seconds.
+Current="AI"		# who is current player, human or AI.
+Player1="Human"		# "Human"
+Player2="AI"		# "AI"
+P1Shots=0			# qtty of shots in Player 1
+P2Shots=0			# 
+P1Hits=0			# qtty of hits in Player 1
+P2Hits=0			# 
+P1Ships_down=0		# qtty of ships of player 1 on the bottom.
+P2Ships_down=0		#
+Now_Shooting=2		# if "1", then shoot in Player1.
+Shot="a0"			#
+Last_Shot="a0"		# if 'a0' - last shot wasn't good, 
+					# if any other e.g. b7 - last hitted ship.
+Prev_Shot="a0"		# Shot before last.
+P1Last_Shot="a0"
+P1Prev_Shot="a0"
+P2Last_Shot="a0"
+P2Prev_Shot="a0"
+
+HotSeat="Yes"
+First_Shot="true"
+hit=1
+BotMode="No"
+P1AI_random_shots=0;
+P2AI_random_shots=0;
+level=3;			#1, 2, 3, 4#
+}
+#################
+#1 - empty		#
+#2 - ship		#
+#3 - round ship	#
+#4 - shotdone	#
+#5 - shiphitted	#
+#6 - shipdown	#
+#################
+########################
+SetMatrixValue()
+{
+	player=$1
+	letter$2
+	row=$3
+	value=$4
+	
+	echo NOT IMPLEMENTED!
+	exit
+}
+########################
+GetMatrixValue()
+{
+	player=$1
+	letter=$2
+	row=$3
+
+	temp=`eval echo "$player"$letter$row`
+	value=`eval echo "$"$temp`
+	echo $value
+}
+########################

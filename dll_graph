@@ -45,20 +45,22 @@ tput setaf $color
 ########################
 ShowMatrix()
 {
+	player=$1
+
   SetColor 
   gotoXY $1 2 2 -1
   echo "        Player $1"
   gotoXY $1 2 2 0
   echo "  |a|b|c|d|e|f|g|h|j|k| "
 
-for ((show_matrix_i=1; $show_matrix_i<11; show_matrix_i++))
+for ((row=1; $row<11; row++))
   do
-  gotoXY $1 2 2 $show_matrix_i
-	if [ "$show_matrix_i" = 10 ]
+  gotoXY $1 2 2 $row
+	if [ "$row" = 10 ]
 	  then
-	   echo -n "$show_matrix_i|"
+	   echo -n "$row|"
 	  else
-	   echo -n " $show_matrix_i|"
+	   echo -n " $row|"
 	  fi
 #################
 #1 - empty		#
@@ -70,9 +72,7 @@ for ((show_matrix_i=1; $show_matrix_i<11; show_matrix_i++))
 #################
 	for letter in $string
 	do
-		temp=`eval echo "$1"$letter$show_matrix_i`
-		value=`eval echo "$"$temp`
-		case $value in
+		case $(GetMatrixValue $player $letter $row) in
 		("1") echo -n "_|" ;;
 		("2") if [ "$1" = "P1" ]
 			then
@@ -91,9 +91,9 @@ for ((show_matrix_i=1; $show_matrix_i<11; show_matrix_i++))
 		("6") SetBackgroundColor red; echo -n " "; SetBackgroundColor; echo -n "|" ;;
 		esac
 	done
-	echo -n "$show_matrix_i"
+	echo -n "$row"
   done
-  gotoXY $1 2 2 $show_matrix_i
+  gotoXY $1 2 2 $row
   echo "  |a|b|c|d|e|f|g|h|j|k| "
   echo
   tput ed

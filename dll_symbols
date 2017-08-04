@@ -545,7 +545,6 @@ ShowLetter()
 			tput cup $row $colum; echo " # "	; row=$(($row + 1))
 			tput cup $row $colum; echo "#"		; row=$(($row + 1))
 			tput cup $row $colum; echo "######"	;;
-	#abcdefghijklmnopqrst uvwxyz
 	esac
 	tput cup $(($2+9)) 1
 }
