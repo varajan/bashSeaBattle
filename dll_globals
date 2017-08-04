@@ -6,6 +6,8 @@ version="____v1.3.1"
 # version for Main menu screen
 version_menu="v1.3.1"
 
+letters="a b c d e f g h j k"
+
 InitVars()
 {
 timeToDelay=2		# sleep $$ seconds.
@@ -34,7 +36,7 @@ hit=1
 BotMode="No"
 P1AI_random_shots=0;
 P2AI_random_shots=0;
-level=3;			#1, 2, 3, 4#
+level=4;			#1, 2, 3, 4#
 }
 #################
 #1 - empty		#

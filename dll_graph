@@ -16,34 +16,76 @@ ClearBelow()
 ########################
 SetBackgroundColor()
 {
-case $1 in
-("black")   color="0" ;;
-("red")     color="1" ;;
-("green")   color="2" ;;
-("yellow")  color="3" ;;
-("blue")    color="4" ;;
-("magenta") color="5" ;;
-("cyan")    color="6" ;;
-("white")   color="7" ;;
-(*)			color="0" ;;
-esac
-tput setab $color
+	case $1 in
+		("black")   color="0" ;;
+		("red")     color="1" ;;
+		("green")   color="2" ;;
+		("yellow")  color="3" ;;
+		("blue")    color="4" ;;
+		("magenta") color="5" ;;
+		("cyan")    color="6" ;;
+		("white")   color="7" ;;
+		(*)			color="0" ;;
+	esac
+
+	tput setab $color
 }
 ########################
 SetColor()
 {
-case $1 in
-("black")   color="0" ;;
-("red")     color="1" ;;
-("green")   color="2" ;;
-("yellow")  color="3" ;;
-("blue")    color="4" ;;
-("magenta") color="5" ;;
-("cyan")    color="6" ;;
-("white")   color="7" ;;
-(*)			color="7" ;;
-esac
-tput setaf $color
+	case $1 in
+		("black")   color="0" ;;
+		("red")     color="1" ;;
+		("green")   color="2" ;;
+		("yellow")  color="3" ;;
+		("blue")    color="4" ;;
+		("magenta") color="5" ;;
+		("cyan")    color="6" ;;
+		("white")   color="7" ;;
+		(*)			color="7" ;;
+	esac
+
+	tput setaf $color
+}
+########################
+ShowSHips()
+{
+	clear
+
+	SetColor 
+	gotoXY 9 2
+	echo "Player $1"  
+
+	gotoXY 2 2
+	echo "  |a|b|c|d|e|f|g|h|j|k| "
+
+	for ((row=1; $row<11; row++))
+		do
+			gotoXY $((2+row)) 2
+			index=$(Ternary "$row = 10" "$row|" " $row|")
+			echo -n "$index"
+			
+			for letter in $letters
+				do
+					case $(GetMatrixValue $player $letter $row) in
+						#1 - empty
+						("1") echo -n "_|" ;;
+
+						#2 - ship
+						("2") SetBackgroundColor green; echo -n " "; SetBackgroundColor; echo -n "|";;
+
+						#3 - round ship
+						("3") SetColor green; echo -n "x"; SetColor; echo -n "|" ;;
+					esac
+				done
+				
+			echo -n "$row"
+		done
+
+	gotoXY $((2+row)) 2
+	echo "  |a|b|c|d|e|f|g|h|j|k| "
+	
+	ClearBelow
 }
 ########################
 ShowMatrix()
@@ -62,14 +104,10 @@ ShowMatrix()
 	for ((row=1; $row<11; row++))
 	do
 		gotoXY $((2+row)) $((2+yOffset))
-		if [ "$row" = 10 ]
-		  then
-		   echo -n "$row|"
-		  else
-		   echo -n " $row|"
-		  fi
+		index=$(Ternary "$row = 10" "$row|" " $row|")
+		echo -n "$index"
 
-		for letter in $string
+		for letter in $letters
 		do
 			case $(GetMatrixValue $player $letter $row) in
 				#1 - empty

@@ -71,50 +71,9 @@ SetShips()
 	done
 }
 ########################
-ShowSHips()
-{
-	clear
-
-	SetColor 
-	gotoXY 9 2
-	echo "Player $1"  
-
-	gotoXY 2 2
-	echo "  |a|b|c|d|e|f|g|h|j|k| "
-
-	for ((row=1; $row<11; row++))
-		do
-			gotoXY $((2+row)) 2
-			index=$(Ternary "$row = 10" "$row|" " $row|")
-			echo -n $index
-			
-			for letter in $string
-				do
-					case $(GetMatrixValue $player $letter $row) in
-						#1 - empty
-						("1") echo -n "_|" ;;
-
-						#2 - ship
-						("2") SetBackgroundColor green; echo -n " "; SetBackgroundColor; echo -n "|";;
-
-						#3 - round ship
-						("3") SetColor green; echo -n "x"; SetColor; echo -n "|" ;;
-					esac
-				done
-				
-			echo -n "$row"
-		done
-
-	gotoXY $((2+row)) 2
-	echo "  |a|b|c|d|e|f|g|h|j|k| "
-	
-	ClearBelow
-}
-########################
 SetShipsManual()
 {
-string="a b c d e f g h j k"
-for letter in $string
+for letter in $letters
   do
 	for ((row=1; $row<11; row++))
 	do
@@ -128,6 +87,7 @@ ship_set="OK"
 for ((i=0; $i<10; i++))
 	do
 		ShowSHips $1
+		
 		again="true"
 		until [ $again = "false" ]
 		do
@@ -277,13 +237,13 @@ for ((i=0; $i<10; i++))
 		done
 	done
 
-string="a b c d e f g h j k"
-for letter in $string
+for letter in $letters
   do
 	eval "$1""$letter""0"="9"
 	eval "$1""$letter""11"="9"
   done
 ShowSHips $1
+
 echo
 echo -n "Press [Return] to continue..."
 read
@@ -291,8 +251,7 @@ read
 ########################
 SetShipsRandom()
 {
-string="a b c d e f g h j k"
-for letter in $string
+for letter in $letters
   do
 	for ((i=1; $i<11; i++))
 	do
@@ -415,13 +374,15 @@ str="_abcdefghjk_"
 		done
 	done
 
-string="a b c d e f g h j k"
-for letter in $string
-  do
-	eval "$1""$letter""0"="9"
-	eval "$1""$letter""11"="9"
-  done
-echo Done.
+	for letter in $letters
+		do
+			# SetMatrixValue $1 $letter  0 9
+			# SetMatrixValue $1 $letter 11 9
+			eval "$1""$letter""0"="9"
+			eval "$1""$letter""11"="9"
+		done
+
+	echo Done.
 }
 ########################
 CheckShip()
@@ -571,10 +532,5 @@ then
 		 fi
 fi
 
-if [ "$down" = "Yes" ]
-then
-	return 0
-else
-	return 1
-fi	
+	return $(Ternary "$down = Yes" 0 1)
 }

@@ -11,8 +11,6 @@ IndexOf()
 	# $1 - long string
 	# $2 - short string to find
 	
-	# echo `expr index "$1" "$2"`
-	
 	echo $1 $2 | awk '{print index($1, $2)}'
 }
 
