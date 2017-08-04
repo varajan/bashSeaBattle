@@ -9,6 +9,11 @@ SetBold()
 	esac
 }
 ########################
+ClearBelow()
+{
+	tput cd
+}
+########################
 SetBackgroundColor()
 {
 case $1 in

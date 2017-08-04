@@ -12,28 +12,28 @@ Ternary()
 ########################
 FRandomize()
 {
-FR_1=`date "+%H"`
-FR_2=`date "+%M"`
-FR_3=`date "+%S"`
+	FR_1=`date "+%H"`
+	FR_2=`date "+%M"`
+	FR_3=`date "+%S"`
 
-temp_FR=`echo $FR_1 | awk '{print substr($1, 1, 1)}'`
-if [ "$temp_FR" = "0" ]
-	then
-		FR_1=`echo $FR_1 | awk '{print substr($1, 2, 1)}'`
-	fi
-temp_FR=`echo $FR_2 | awk '{print substr($1, 1, 1)}'`
-if [ "$temp_FR" = "0" ]
-	then
-		FR_2=`echo $FR_2 | awk '{print substr($1, 2, 1)}'`
-	fi
-temp_FR=`echo $FR_3 | awk '{print substr($1, 1, 1)}'`
-if [ "$temp_FR" = "0" ]
-	then
-		FR_3=`echo $FR_3 | awk '{print substr($1, 2, 1)}'`
-	fi
+	temp_FR=`echo $FR_1 | awk '{print substr($1, 1, 1)}'`
+	if [ "$temp_FR" = "0" ]
+		then
+			FR_1=`echo $FR_1 | awk '{print substr($1, 2, 1)}'`
+		fi
+	temp_FR=`echo $FR_2 | awk '{print substr($1, 1, 1)}'`
+	if [ "$temp_FR" = "0" ]
+		then
+			FR_2=`echo $FR_2 | awk '{print substr($1, 2, 1)}'`
+		fi
+	temp_FR=`echo $FR_3 | awk '{print substr($1, 1, 1)}'`
+	if [ "$temp_FR" = "0" ]
+		then
+			FR_3=`echo $FR_3 | awk '{print substr($1, 2, 1)}'`
+		fi
 
-A=$((FR_1*57+FR_2*FR_3+$$+$?+$!+$#))
-B=$((FR_1+FR_2+FR_3%57+$$+$?+$!+$#))
+	A=$((FR_1*57+FR_2*FR_3+$$+$?+$!+$#))
+	B=$((FR_1+FR_2+FR_3%57+$$+$?+$!+$#))
 }
 ########################
 FRandom()
@@ -41,6 +41,7 @@ FRandom()
 	X1=$(dd if=/dev/random bs=1 count=1 2> /dev/null)
 	X2=$(echo $X1 | perl -e '$/ = undef; my $val = <STDIN>; print ord($val);')
 	RandNumber=$((X2%$1))
+	
 	return $RandNumber
 }
 ########################
@@ -106,8 +107,8 @@ ShowSHips()
 
 	gotoXY $((2+row)) 2
 	echo "  |a|b|c|d|e|f|g|h|j|k| "
-	echo
-	tput cd
+	
+	ClearBelow
 }
 ########################
 SetShipsManual()
