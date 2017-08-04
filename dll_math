@@ -1,6 +1,15 @@
 #! /bin/bash
 
 ########################
+Ternary()
+{
+	condition=$1
+	ifTrue=$2
+	ifElse=$3
+	
+	[ $condition ] && echo "$ifTrue" || echo "$ifElse"
+}
+########################
 FRandomize()
 {
 FR_1=`date "+%H"`
@@ -49,12 +58,10 @@ done
 ########################
 gotoXY()
 {
-if [ "$1" = "P1" ]
-  then
-    tput cup $(($2+$4)) $3
-  else
-    tput cup $(($2+$4)) $(($3+27))
-  fi
+	x=$1
+	y=$2
+
+    tput cup $x $y
 }
 ########################
 SetShips()
@@ -77,46 +84,43 @@ SetShips()
 ########################
 ShowSHips()
 {
-  clear
-  SetColor 
-  gotoXY P1 2 2 -1
-  echo "        Player $1"  
-  gotoXY P1 2 2 0
-  echo "  |a|b|c|d|e|f|g|h|j|k| "
+	clear
+	SetColor 
+	gotoXY 1 2
+	echo "        Player $1"  
+	gotoXY 2 2
+	echo "  |a|b|c|d|e|f|g|h|j|k| "
 
-for ((show_matrix_i=1; $show_matrix_i<11; show_matrix_i++))
-  do
-  gotoXY P1 2 2 $show_matrix_i
-	if [ "$show_matrix_i" = 10 ]
-	  then
-	   echo -n "$show_matrix_i|"
-	  else
-	   echo -n " $show_matrix_i|"
-	  fi
-#################
-#1 - empty		#
-#2 - ship		#
-#3 - round ship	#
-#4 - shotdone	#
-#5 - shiphitted	#
-#6 - shipdown	#
-#################
-	for letter in $string
-	do
-		temp=`eval echo "$1"$letter$show_matrix_i`
-		value=`eval echo "$"$temp`
-		case $value in
-		("1") echo -n "_|" ;;
-		("2") SetBackgroundColor green; echo -n " "; SetBackgroundColor; echo -n "|";;
-		("3") SetColor green; echo -n "x"; SetColor; echo -n "|" ;;
-		esac
-	done
-	echo -n "$show_matrix_i"
-  done
-  gotoXY P1 2 2 $show_matrix_i
-  echo "  |a|b|c|d|e|f|g|h|j|k| "
-  echo
-  tput cd
+	for ((row=1; $row<11; row++))
+		do
+			gotoXY $((2+row)) 2
+			if [ "$row" = 10 ]
+				then
+					echo -n "$row|"
+				else
+					echo -n " $row|"
+				fi
+			for letter in $string
+				do
+					case $(GetMatrixValue $player $letter $row) in
+						#1 - empty
+						("1") echo -n "_|" ;;
+
+						#2 - ship
+						("2") SetBackgroundColor green; echo -n " "; SetBackgroundColor; echo -n "|";;
+
+						#3 - round ship
+						("3") SetColor green; echo -n "x"; SetColor; echo -n "|" ;;
+					esac
+				done
+				
+			echo -n "$row"
+		done
+
+	gotoXY $((2+row)) 2
+	echo "  |a|b|c|d|e|f|g|h|j|k| "
+	echo
+	tput cd
 }
 ########################
 SetShipsManual()
@@ -124,11 +128,12 @@ SetShipsManual()
 string="a b c d e f g h j k"
 for letter in $string
   do
-	for ((i=1; $i<11; i++))
+	for ((row=1; $row<11; row++))
 	do
-		eval "$1"$letter$i="1"
+		eval "$1"$letter$row="1"
 	done
   done
+  
 str="_abcdefghjk_"
 ship_set="OK"
 

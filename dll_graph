@@ -3,12 +3,10 @@
 ########################
 SetBold()
 {
-if [ "$1" -eq "0" ]
-then
-	tput bold
-else
-	tput sgr0
-fi
+	case $1 in
+		("true") tput bold ;;
+		(*)		 tput sgr0 ;;
+	esac
 }
 ########################
 SetBackgroundColor()
@@ -46,64 +44,73 @@ tput setaf $color
 ShowMatrix()
 {
 	player=$1
+	yOffset=$(Ternary "$player == P1" 0 27)
+	
+	SetColor 
 
-  SetColor 
-  gotoXY $1 2 2 -1
-  echo "        Player $1"
-  gotoXY $1 2 2 0
-  echo "  |a|b|c|d|e|f|g|h|j|k| "
+	gotoXY 1 $((2+yOffset))
+	echo "        Player $player"
 
-for ((row=1; $row<11; row++))
-  do
-  gotoXY $1 2 2 $row
-	if [ "$row" = 10 ]
-	  then
-	   echo -n "$row|"
-	  else
-	   echo -n " $row|"
-	  fi
-#################
-#1 - empty		#
-#2 - ship		#
-#3 - round ship	#
-#4 - shotdone	#
-#5 - shiphitted	#
-#6 - shipdown	#
-#################
-	for letter in $string
+	gotoXY 2 $((2+yOffset))
+	echo "  |a|b|c|d|e|f|g|h|j|k| "
+
+	for ((row=1; $row<11; row++))
 	do
-		case $(GetMatrixValue $player $letter $row) in
-		("1") echo -n "_|" ;;
-		("2") if [ "$1" = "P1" ]
-			then
-				if [ "$HotSeat" = "No" ]
-				  then
-					SetBackgroundColor green; echo -n " "; SetBackgroundColor; echo -n "|" 
-				  else
-				  	echo -n "_|"
-				  fi
-			else
-				echo -n "_|"
-			fi;;
-		("3") echo -n "_|" ;;
-		("4") SetColor cyan; echo -n "x"; SetColor; echo -n "|" ;;
-		("5") SetBackgroundColor green; SetColor red; echo -n "x"; SetBackgroundColor; SetColor; echo -n "|" ;;
-		("6") SetBackgroundColor red; echo -n " "; SetBackgroundColor; echo -n "|" ;;
-		esac
-	done
-	echo -n "$row"
-  done
-  gotoXY $1 2 2 $row
-  echo "  |a|b|c|d|e|f|g|h|j|k| "
-  echo
-  tput ed
+		gotoXY $((2+row)) $((2+yOffset))
+		if [ "$row" = 10 ]
+		  then
+		   echo -n "$row|"
+		  else
+		   echo -n " $row|"
+		  fi
 
-  if [ "$Now_Shooting" = "2" ]
-  then echo "Player 1! It's your turn!"; echo
-  else 
-    if [ "$HotSeat" = "Yes" ] ; then echo "Player 2! It's your turn!"; echo; fi
-    if [ "$BotMode" = "Yes" ] ; then echo "Player 2! It's your turn!"; echo; fi
-  fi
+		for letter in $string
+		do
+			case $(GetMatrixValue $player $letter $row) in
+				#1 - empty
+				("1") echo -n "_|" ;;
+
+				#2 - ship
+				("2") if [ "$1" = "P1" ]
+					then
+						if [ "$HotSeat" = "No" ]
+						  then
+							SetBackgroundColor green; echo -n " "; SetBackgroundColor; echo -n "|" 
+						  else
+							echo -n "_|"
+						  fi
+					else
+						echo -n "_|"
+					fi;;
+
+				#3 - round ship
+				("3") echo -n "_|" ;;
+
+				("4") SetColor cyan; echo -n "x"; SetColor; echo -n "|" ;;
+				#4 - shotdone
+
+				#5 - shiphitted
+				("5") SetBackgroundColor green; SetColor red; echo -n "x"; SetBackgroundColor; SetColor; echo -n "|" ;;
+
+				#6 - shipdown
+				("6") SetBackgroundColor red; echo -n " "; SetBackgroundColor; echo -n "|" ;;
+			esac
+		done
+		
+		echo -n "$row"
+	done
+	
+	gotoXY $((2+row)) $((2+yOffset))
+	echo "  |a|b|c|d|e|f|g|h|j|k| "
+	echo
+	tput ed
+
+	if [ "$Now_Shooting" = "2" ]
+		then echo "Player 1! It's your turn!"; echo
+	else
+		if [ "$HotSeat" = "Yes" ] ; then echo "Player 2! It's your turn!"; echo; fi
+		if [ "$BotMode" = "Yes" ] ; then echo "Player 2! It's your turn!"; echo; fi
+	fi
 }
 ########################
 About()
@@ -134,13 +141,14 @@ do
 	esac
 
 	clear
-	SetColor red; SetBackgroundColor; SetBold 0
+	SetColor red; SetBackgroundColor; SetBold true
 	echo
 	echo
 	echo
 	echo " Sea Battle. BASH-script version $version_menu"
 	echo
-	SetBold 1; SetColor yellow
+	
+	SetBold false; SetColor yellow
 	echo " Please, make Your choice:"; echo 
 	SetColor magenta; echo -n " 'one' "; SetColor cyan
 	echo "- single-player (against computer)."
