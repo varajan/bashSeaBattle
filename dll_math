@@ -44,18 +44,6 @@ FRandom()
 	return $RandNumber
 }
 ########################
-Waiting()
-{
-lastCP="0"
-while [ "$lastCP" -eq "0" ]
-do
-	sleep 1	
-	echo -n .
-	lastCP=`ps -x | grep "$!" | grep -v grep > /dev/null; echo $?`
-done
-	echo
-}
-########################
 gotoXY()
 {
 	x=$1
@@ -85,21 +73,20 @@ SetShips()
 ShowSHips()
 {
 	clear
+
 	SetColor 
-	gotoXY 1 2
-	echo "        Player $1"  
+	gotoXY 9 2
+	echo "Player $1"  
+
 	gotoXY 2 2
 	echo "  |a|b|c|d|e|f|g|h|j|k| "
 
 	for ((row=1; $row<11; row++))
 		do
 			gotoXY $((2+row)) 2
-			if [ "$row" = 10 ]
-				then
-					echo -n "$row|"
-				else
-					echo -n " $row|"
-				fi
+			index=$(Ternary "$row = 10" "$row|" " $row|")
+			echo -n $index
+			
 			for letter in $string
 				do
 					case $(GetMatrixValue $player $letter $row) in
