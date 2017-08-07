@@ -1,28 +1,13 @@
 #! /bin/bash
 
 ########################
-ChangePlayer()
-{
-if [ "$Now_Shooting" = "1" ]
-then
-	Now_Shooting=2
-else
-	Now_Shooting=1
-fi
-}
-########################
 GameOver()
 {
 if [ "$P1Ships_down" -eq 10 ]
 	then
 		return 0
 	else
-		if [ "$P2Ships_down" -eq 10 ]
-			then 
-				return 0
-			else
-				return 1
-			fi
+		return $(Ternary "$P2Ships_down = 10" 0 1)
 	fi
 }
 ########################
@@ -87,7 +72,7 @@ GetShot()
 	player=`eval echo "$"$flag`
 	
 	if [ "$player" = "AI" ]
-	then sleep $timeToDelay; AI_turn; Current="AI"
+	then sleep 1; AI_turn; Current="AI"
 	else Human_turn; Current="Human"
 	fi
 }
@@ -309,51 +294,55 @@ Human_random()
 
 Game()
 {
-SetBackgroundColor; SetColor; clear
-if [ "$Player1" = "Human" ]
-  then
-	SetShips P1
-  else
-	SetShipsRandom P1
-  fi
-if [ "$Player2" = "Human" ]
-  then
-	SetShips P2
-  else
-	SetShipsRandom P2
-  fi
-
-clear
-ShowMatrix P1
-ShowMatrix P2
-
-until GameOver
-do
-	if [ "$First_Shot" = "false" ]
-	  then
-	    if [ "$hit" = "0" ]
-	    then
-	    	eval ShowMatrix P"$Now_Shooting"
-	    else
-			if [ "$Now_Shooting" = "1" ]
-			then ShowMatrix P2
-			else ShowMatrix P1
-			fi
-		fi
-	  fi
-
-	GetShot
-	if [ "$hit" = "0" ]
+	SetBackgroundColor;
+	SetColor;
+	clear
+	
+	if [ "$Player1" = "Human" ]
 		then
-			CheckShip $Shot
+			SetShips P1
 		else
-			ChangePlayer
-		fi
-	if [ "$Current" = "AI" ] ; then sleep $timeToDelay; else sleep 1; fi
-	First_Shot="false"
-	if [ $Shot = "exit" ]; then P1Ships_down=10; fi
-done
+			SetShipsRandom P1
+	fi
 
-if [ $Shot != "exit" ]; then OnFinish; fi
+	if [ "$Player2" = "Human" ]
+		then
+			SetShips P2
+		else
+			SetShipsRandom P2
+	fi
+
+	clear
+	ShowMatrix P1
+	ShowMatrix P2
+
+	until GameOver
+	do
+		if [ "$First_Shot" = "false" ]
+		  then
+			if [ "$hit" = "0" ]
+			then
+				eval ShowMatrix P"$Now_Shooting"
+			else
+				if [ "$Now_Shooting" = "1" ]
+				then ShowMatrix P2
+				else ShowMatrix P1
+				fi
+			fi
+		  fi
+
+		GetShot
+		if [ "$hit" = "0" ]
+			then
+				CheckShip $Shot
+			else
+				Now_Shooting=$(Ternary "$Now_Shooting = 1" 2 1)
+			fi
+		sleep 1
+		
+		First_Shot="false"
+		if [ $Shot = "exit" ] ; then P1Ships_down=10; fi
+	done
+
+	if [ $Shot != "exit" ] ; then OnFinish; fi
 }
-########################

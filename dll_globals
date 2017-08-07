@@ -10,7 +10,6 @@ letters="a b c d e f g h j k"
 
 InitVars()
 {
-timeToDelay=2		# sleep $$ seconds.
 Current="AI"		# who is current player, human or AI.
 Player1="Human"		# "Human"
 Player2="AI"		# "AI"
