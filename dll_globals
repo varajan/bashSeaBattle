@@ -8,6 +8,9 @@ version_menu="v1.3.1"
 
 letters="a b c d e f g h j k"
 
+True=1
+False=0
+
 InitVars()
 {
 Current="AI"		# who is current player, human or AI.

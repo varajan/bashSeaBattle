@@ -1,16 +1,6 @@
 #! /bin/bash
 
 ########################
-GameOver()
-{
-if [ "$P1Ships_down" -eq 10 ]
-	then
-		return 0
-	else
-		return $(Ternary "$P2Ships_down = 10" 0 1)
-	fi
-}
-########################
 OnFinish()
 {
 clear
@@ -316,7 +306,7 @@ Game()
 	ShowMatrix P1
 	ShowMatrix P2
 
-	until GameOver
+	until [ $(Or "$P1Ships_down = 10" "$P2Ships_down = 10") = $True ]
 	do
 		if [ "$First_Shot" = "false" ]
 		  then

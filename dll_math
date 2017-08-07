@@ -5,27 +5,27 @@ Not()
 {
 	# return 1 if 0
 	
-	echo $(Ternary "$1" 0 1)
+	echo $(Ternary "$1" $False $True)
 }
 ########################
 Or()
 {
 	for condition in "$@"
 		do
-			if [ $condition ]; then echo 1; return; fi
+			if [ $condition ]; then echo $True; return; fi
 		done
 
-	echo 0
+	echo $False
 }
 ########################
 And()
 {
 	for condition in "$@"
 		do
-			if [ $(Not "$condition") = "1" ]; then echo 0; return; fi
+			if [ $(Not "$condition") = "$True" ]; then echo $False; return; fi
 		done
 
-	echo 1
+	echo $True
 }
 ########################
 Ternary()
