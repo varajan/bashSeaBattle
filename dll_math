@@ -1,6 +1,33 @@
 #! /bin/bash
 
 ########################
+Not()
+{
+	# return 1 if 0
+	
+	echo $(Ternary "$1" 0 1)
+}
+########################
+Or()
+{
+	for condition in "$@"
+		do
+			if [ $condition ]; then echo 1; return; fi
+		done
+
+	echo 0
+}
+########################
+And()
+{
+	for condition in "$@"
+		do
+			if [ $(Not "$condition") = "1" ]; then echo 0; return; fi
+		done
+
+	echo 1
+}
+########################
 Ternary()
 {
 	condition=$1
