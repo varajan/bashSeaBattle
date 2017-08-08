@@ -159,9 +159,10 @@ ShowMatrix()
 About()
 {
 	clear;
-	
 	TypeWord "Sea_Battle" 3 1 red
 	TypeWord "$version" 8 1 blue
+	gotoXY 15 1
+	
 	SetColor green
 	echo "   Made by Sergii Dmytrenko"
 	echo "    To make a shot, just type it. E.g. \"b7\"."
