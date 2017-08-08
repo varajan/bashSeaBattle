@@ -32,15 +32,14 @@ Check()
 ########################
 DoShot()
 {
-	Shots_t=`eval echo "$""P$Now_Shooting"Shots`
-	eval "P$Now_Shooting"Shots=$(($Shots_t+1))
+	Inc "P$Now_Shooting"Shots
 
 	temp=`eval echo "P$Now_Shooting""$1"`
 	value=`eval echo "$"$temp`
 	if [ "$value" = "2" ]
 	then
-		Hits_t=`eval echo "$""P$Now_Shooting"Hits`
-		eval "P$Now_Shooting"Hits=$(($Hits_t+1))
+		Inc "P$Now_Shooting"Hits
+
 		echo -n "Shot done in [$1] - hit!"
 		eval "$temp"="5"
 		return 0
