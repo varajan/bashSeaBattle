@@ -182,6 +182,7 @@ do
 		("two") InitVars; Player2="Human";	Game;;
 		("bot") InitVars; Player1="AI";		HotSeat="No";	BotMode="Yes"; Game;;
 		("inf") About;;
+		("fin") InitVars; P1Shots=1; P2Shots=1; OnFinish;;
 	esac
 
 	clear

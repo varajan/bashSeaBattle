@@ -3,21 +3,23 @@
 ########################
 OnFinish()
 {
-clear
-if [ "$P2Ships_down" -eq 10 ]
-	then
-		TypeWord "P1_wins!" 5 3 cyan
-	else
-		TypeWord "P2_wins!" 5 3 magenta
-	fi
-echo
-echo "P1 accuracy = $((P2Hits*100/$P2Shots)).$((P2Hits*100%$P2Shots*100/$P2Shots))%"
-echo "P2 accuracy = $((P1Hits*100/$P1Shots)).$((P1Hits*100%$P1Shots*100/$P1Shots))%"
-echo
-echo -n "Press [Enter] to continue..."
-read
-tput me
-clear
+	clear
+	if [ "$P2Ships_down" -eq 10 ]
+		then
+			TypeWord "P1_wins!" 5 3 cyan
+		else
+			TypeWord "P2_wins!" 5 3 magenta
+		fi
+
+	gotoXY 12 0
+	echo "P1 accuracy = $((P2Hits*100/$P2Shots)).$((P2Hits*100%$P2Shots*100/$P2Shots))%"
+	echo "P2 accuracy = $((P1Hits*100/$P1Shots)).$((P1Hits*100%$P1Shots*100/$P1Shots))%"
+	echo
+	echo -n "Press [Enter] to continue..."
+	read
+	
+	tput me
+	clear
 }
 ########################
 Check()
