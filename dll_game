@@ -235,23 +235,16 @@ AI_random()
 
 	flag=$(($AI_random_shots%(12/$level) ))
 
-	str="abcdefghjk"
 	OK=1
 	until [ "$OK" = "0" ]
 	do
 		if [ "$flag" = "0" ]
 		then
-			FRandom 10; x=$((RandNumber+1))
-			FRandom 10; y=$((RandNumber+1))
-			position=`echo $str $x | awk '{print substr($1, $2, 1)}'`
-			Shot=`eval echo $position$y`
+			Shot=$(GetRandomShot)
 			Pos=`eval echo "$"P"$Now_Shooting"$Shot`
 			if [ "$Pos" = "2" ]; then OK=0; fi
 		else
-			FRandom 10; x=$((RandNumber+1))
-			FRandom 10; y=$((RandNumber+1))
-			position=`echo $str $x | awk '{print substr($1, $2, 1)}'`
-			Shot=`eval echo $position$y`
+			Shot=$(GetRandomShot)
 			Check $Shot
 			OK=`echo $?`
 		fi
@@ -269,17 +262,23 @@ AI_random()
 ########################
 Human_random()
 {
-	str="abcdefghjk"
 	OK=1
 	until [ "$OK" = "0" ]
 	do
-		FRandom 10; x=$((RandNumber+1))
-		FRandom 10; y=$((RandNumber+1))
-		position=`echo $str $x | awk '{print substr($1, $2, 1)}'`
-		Shot=`eval echo $position$y`
+		Shot=$(GetRandomShot)
 		Check $Shot
 		OK=`echo $?`
 	done
+}
+########################
+GetRandomShot()
+{
+	# will return something like 'b8'
+	FRandom 10; index=$((RandNumber+1))
+	FRandom 10; number=$((RandNumber+1))
+	letter=$(SubString "abcdefghjk" $index 1)
+	
+	echo $letter$number
 }
 ########################
 
