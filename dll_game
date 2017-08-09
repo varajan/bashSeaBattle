@@ -26,9 +26,10 @@ Check()
 {
 	temp=`eval echo "P$Now_Shooting""$1"`
 	value=`eval echo "$"$temp`
+	
 	case $value in 
-	("1" | "2" | "3") return 0;;
-	(*) return 1;;
+		("1" | "2" | "3") echo 0; return;;
+		(*) echo 1; return;;
 	esac
 }
 ########################
@@ -76,7 +77,8 @@ Human_turn()
 		echo -n "Next shot: "
 		read Shot
 		if [ $Shot = "rand" ]; then Human_random; fi
-		OK=`Check $Shot; echo $?`
+		
+		OK=$(Check $Shot)
 		if [ $Shot = "exit" ]; then OK=0; fi
 	done
 	if [ $Shot != "exit" ]; then DoShot $Shot; fi
@@ -85,7 +87,7 @@ Human_turn()
 ########################
 AI_turn()
 {
-# init last_ and prev_ shot variables.
+	# init last_ and prev_ shot variables.
 	temp=`eval echo "P"$Now_Shooting"Last_Shot"`
 	eval Last_Shot="$"$temp
 	temp=`eval echo "P"$Now_Shooting"Prev_Shot"`
@@ -97,8 +99,9 @@ AI_turn()
 	  Prev_Shot="a0"
 	else
 	  AI_kill_ship
-	  fi
-# init last_ and prev_ shot variables.
+	fi
+	
+	# init last_ and prev_ shot variables.
 	eval "P"$Now_Shooting"Last_Shot"="$Last_Shot"
 	eval "P"$Now_Shooting"Prev_Shot"="$Prev_Shot"
 }
@@ -120,8 +123,8 @@ AI_kill_ship()
 		  then FRandom 3; y_next=$(($RandNumber+$y-1)); fi
 		  position=`echo $str $x_next | awk '{print substr($1, $2, 1)}'`
 		  Shot=`eval echo $position$y_next`
-		  Check $Shot
-		  OK=`echo $?`
+		  
+		  OK=$(Check $Shot)
 		done
 	
 		DoShot $Shot
@@ -245,8 +248,7 @@ AI_random()
 			if [ "$Pos" = "2" ]; then OK=0; fi
 		else
 			Shot=$(GetRandomShot)
-			Check $Shot
-			OK=`echo $?`
+			OK=$(Check $Shot)
 		fi
 	done
 	
@@ -266,8 +268,7 @@ Human_random()
 	until [ "$OK" = "0" ]
 	do
 		Shot=$(GetRandomShot)
-		Check $Shot
-		OK=`echo $?`
+		OK=$(Check $Shot)
 	done
 }
 ########################
