@@ -71,3 +71,10 @@ GetMatrixValue()
 	echo $value
 }
 ########################
+GetValue()
+{
+	# $1 - variable name, not value.
+
+	echo `eval echo "$"$1`
+}
+########################

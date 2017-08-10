@@ -24,12 +24,11 @@ OnFinish()
 ########################
 Check()
 {
-	temp=`eval echo "P$Now_Shooting""$1"`
-	value=`eval echo "$"$temp`
+	# $1 - is shot, e.g. b7
 	
-	case $value in 
-		("1" | "2" | "3") echo 0; return;;
-		(*) echo 1; return;;
+	case $(GetValue "P$Now_Shooting""$1") in 
+		("1" | "2" | "3") echo 0;;
+		(*) echo 1;;
 	esac
 }
 ########################
