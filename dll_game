@@ -34,22 +34,27 @@ Check()
 ########################
 DoShot()
 {
-	Inc "P$Now_Shooting"Shots
+	# $1 - is shot, e.g. b7
 
-	temp=`eval echo "P$Now_Shooting""$1"`
-	value=`eval echo "$"$temp`
-	if [ "$value" = "2" ]
+	Inc "P$Now_Shooting"Shots
+	cell="P$Now_Shooting""$1"
+
+	if [ $(GetValue $cell) = "2" ]
 	then
 		Inc "P$Now_Shooting"Hits
 
 		echo -n "Shot done in [$1] - hit!"
-		eval "$temp"="5"
+		
+		SetValue $cell 5
 		return 0
 	else
 		echo -n "Shot done in [$1] - miss!"
-		eval "$temp"="4"
+
+		SetValue $cell 4
 		return 1
 	fi
+	
+	echo $(GetValue $cell)
 }
 ########################
 GetShot()
