@@ -95,14 +95,13 @@ SetShips()
 	echo
 	echo "Generate ships for player $1 randomly or set manually? [R/M]"
 
-	OK=1
-	until [ "$OK" = "0" ]
+	until [ "1" = "0" ]
 	do
 		echo -n "> "
 		read answer
 		case $answer in
-		('r' | 'R') SetShipsRandom $1; OK=0;;
-		('m' | 'M') SetShipsManual $1; OK=0;;
+		('r' | 'R') SetShipsRandom $1; return;;
+		('m' | 'M') SetShipsManual $1; return;;
 		esac
 	done
 }
@@ -412,10 +411,8 @@ str="_abcdefghjk_"
 
 	for letter in $letters
 		do
-			# SetMatrixValue $1 $letter  0 9
-			# SetMatrixValue $1 $letter 11 9
-			eval "$1""$letter""0"="9"
-			eval "$1""$letter""11"="9"
+			SetMatrixValue $1 $letter  0 9
+			SetMatrixValue $1 $letter 11 9
 		done
 
 	echo Done.

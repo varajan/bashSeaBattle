@@ -52,12 +52,11 @@ level=4;			#1, 2, 3, 4#
 SetMatrixValue()
 {
 	player=$1
-	letter$2
+	letter=$2
 	row=$3
 	value=$4
-	
-	echo NOT IMPLEMENTED!
-	exit
+
+	SetValue `eval echo "$player"$letter$row` $value
 }
 ########################
 GetMatrixValue()
@@ -66,9 +65,7 @@ GetMatrixValue()
 	letter=$2
 	row=$3
 
-	temp=`eval echo "$player"$letter$row`
-	value=`eval echo "$"$temp`
-	echo $value
+	GetValue `eval echo "$player"$letter$row`
 }
 ########################
 GetValue()
