@@ -8,6 +8,3 @@ Don't forget to make the 'run' file executable:
 
 How to play it on Windows? I've found the way how to run it on Windows 10 64bit:
 https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/
-
-To convert all files from 'Dos' to '*nix'
-for file in `ls -p | grep -v /`; do awk '{ sub("\r$", ""); print }' $file > temp$file; mv temp$file $file; done

@@ -1,4 +1,4 @@
-#! /bin/bash
+for file in `ls -p | grep -v /`; do awk '{ sub("\r$", ""); print }' $file > temp$file; mv temp$file $file; done ; echo "ATTENTION: Files were successfully converted to Unix format. Please re-run again!" ; echo ; echo ;
 
 . "dll_globals"
 . "dll_game"
