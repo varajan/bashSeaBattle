@@ -1,5 +1,5 @@
 # Sea Battle
-Play a sea battle game in _*nix_ console against an computer (4 levels) or a human.
+Play a sea battle game in _*nix_ console against a computer (4 levels) or a human.
 
 ## How to use:
 * Download this [zip archive](https://codeload.github.com/varajan/bashSeaBattle/zip/master).
